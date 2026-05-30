@@ -1,56 +1,79 @@
 /* =============================================================================
-   Kira-Kira — globals.css
+   Kira-Kira — theme.css
    Kopitiam / Makan visual identity. Tailwind v4 (CSS-first @theme).
-   Base tokens authored in design/theme.css (compiled-verified), plus the
-   receipt / chop-stamp / teh-tarik motion primitives this app needs.
+
+   HOW TO USE
+   ----------
+   Paste the contents of this file into src/app/globals.css, replacing the
+   placeholder :root / @theme block. It is designed to need ZERO edits to any
+   other file:
+     - Fonts load via @import (below). No next/font wiring required.
+     - Dark mode uses prefers-color-scheme, matching the existing globals.css.
+
+   PRODUCTION UPGRADES (optional, require touching layout.tsx — out of scope here)
+     - Swap the @import for next/font/google (Fraunces, Plus Jakarta Sans,
+       Space Grotesk) and assign the CSS variables in <body>. Faster, no FOUT.
+     - Add a `.dark` class strategy on <html> if you want a manual theme toggle.
+       To enable it, duplicate the dark token block under `:root.dark { ... }`.
+
+   All color pairs in this file were checked for WCAG AA (4.5:1) for their
+   intended use. Bright sambal (#D2462C / #C8442B) is for FILLS with white text;
+   sambal as TEXT on cream uses the darker --color-sambal-text.
    ============================================================================= */
 
 @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap");
 
 @import "tailwindcss";
 
+/* -----------------------------------------------------------------------------
+   1. RAW TOKENS — light mode (default)
+   Brand ramps stay constant across modes; semantic + surface tokens flip below.
+   --------------------------------------------------------------------------- */
 :root {
   /* Kopi — espresso brown ramp (brand primary / ink) */
   --kopi-50:  #F6EEE4;
   --kopi-100: #E9D8C4;
   --kopi-200: #D2B596;
   --kopi-300: #B68C66;
-  --kopi-400: #8A6A52;
+  --kopi-400: #8A6A52;  /* muted text on cream (AA) */
   --kopi-500: #6E4A30;
-  --kopi-600: #5A3A26;
-  --kopi-700: #4A2E1E;
+  --kopi-600: #5A3A26;  /* body text on cream (AAA) */
+  --kopi-700: #4A2E1E;  /* primary button fill */
   --kopi-800: #382215;
-  --kopi-900: #2A1A12;
+  --kopi-900: #2A1A12;  /* headings on cream (AAA) */
 
   /* Krim — condensed-milk cream ramp (light surfaces) */
   --krim-50:  #FFFDF7;
-  --krim-100: #FBF4E6;
+  --krim-100: #FBF4E6;  /* app background */
   --krim-200: #F4E8D0;
   --krim-300: #EBD9B8;
 
-  /* Pandan-teal — kopitiam wall-tile accent */
+  /* Pandan-teal — kopitiam wall-tile accent (secondary / structure) */
   --teal-50:  #E3F2EE;
   --teal-100: #BCE0D7;
   --teal-200: #6FBFAE;
   --teal-300: #2E8A7A;
-  --teal-400: #0F5C52;
+  --teal-400: #0F5C52;  /* secondary button fill, focus ring */
   --teal-500: #0B4842;
 
-  /* Sambal — chili red accent */
+  /* Sambal — chili red accent (energy / CTAs / alerts) */
   --sambal-300: #E8694F;
-  --sambal-400: #D2462C;
-  --sambal-500: #C8442B;
-  --sambal-600: #A8341E;
+  --sambal-400: #D2462C;  /* primary accent fill */
+  --sambal-500: #C8442B;  /* button fill, white text AA */
+  --sambal-600: #A8341E;  /* sambal-as-text on cream (AA) */
 
-  /* Teh-tarik — warm amber */
+  /* Teh-tarik — warm amber (pending / highlights) */
   --teh-300: #E8A93D;
   --teh-400: #C77F1A;
   --teh-500: #9A5B00;
 
+  /* -------------------------------------------------------------------------
+     SEMANTIC + SURFACE (light) — these flip in the dark block
+     ----------------------------------------------------------------------- */
   --background:        var(--krim-100);
-  --surface:           var(--krim-50);
-  --surface-raised:    #FFFFFF;
-  --surface-sunken:    var(--krim-200);
+  --surface:           var(--krim-50);   /* cards */
+  --surface-raised:    #FFFFFF;          /* QR card, modals */
+  --surface-sunken:    var(--krim-200);  /* inputs, wells */
   --foreground:        var(--kopi-900);
   --foreground-muted:  var(--kopi-400);
   --foreground-body:   var(--kopi-600);
@@ -65,6 +88,7 @@
   --secondary-foreground:#EAFBF6;
   --ring:              var(--teal-400);
 
+  /* Status — chip bg / chip text pairs (all AA on their pair) */
   --paid:              #1E6B3A;
   --paid-bg:           #DCEFD9;
   --paid-foreground:   #1E6B3A;
@@ -75,45 +99,57 @@
   --pending-bg:        #FBEBCB;
   --pending-foreground:#9A5B00;
 
+  /* WhatsApp brand (nudge button) */
   --whatsapp:          #1FA855;
   --whatsapp-foreground:#FFFFFF;
 
+  /* Progress ring stops (DuitNow-ish) */
   --ring-track:        #EBD9B8;
   --ring-fill-from:    #D2462C;
   --ring-fill-to:      #E8A93D;
   --ring-fill-done:    #1E6B3A;
 
-  --kira-shadow-color:  42 26 18;
+  /* Shadows — warm-tinted, never pure black.
+     Source vars are `--kira-`-prefixed so the @theme tokens that consume them
+     never reference themselves (a self-referential var() is an invalid cycle). */
+  --kira-shadow-color:  42 26 18;   /* kopi-900 as r g b for alpha mixing */
   --kira-shadow-xs:  0 1px 2px rgb(var(--kira-shadow-color) / 0.06);
   --kira-shadow-sm:  0 2px 6px  rgb(var(--kira-shadow-color) / 0.08);
   --kira-shadow-md:  0 8px 20px rgb(var(--kira-shadow-color) / 0.10);
   --kira-shadow-lg:  0 16px 40px rgb(var(--kira-shadow-color) / 0.14);
   --kira-shadow-glow-accent: 0 6px 22px rgb(210 70 44 / 0.30);
 
+  /* Radii */
   --kira-radius-xs:  6px;
   --kira-radius-sm:  10px;
-  --kira-radius-md:  16px;
-  --kira-radius-lg:  24px;
+  --kira-radius-md:  16px;   /* default card / button */
+  --kira-radius-lg:  24px;   /* hero cards, QR card */
   --kira-radius-xl:  32px;
 
+  /* Fonts */
   --kira-font-display: "Fraunces", ui-serif, Georgia, serif;
   --kira-font-sans:    "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --kira-font-mono:    "Space Grotesk", ui-monospace, "SF Mono", Menlo, monospace;
 }
 
+/* -----------------------------------------------------------------------------
+   2. DARK MODE — espresso-after-hours. Brand ramps unchanged; surfaces flip.
+   Uses prefers-color-scheme to match existing globals.css (zero app wiring).
+   To use a manual toggle instead, copy this block to `:root.dark { ... }`.
+   --------------------------------------------------------------------------- */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background:        #17110C;
-    --surface:           #22190F;
-    --surface-raised:    #2B2013;
-    --surface-sunken:    #1B140D;
-    --foreground:        #F3E7CE;
-    --foreground-muted:  #C9B79A;
+    --background:        #17110C;       /* espresso */
+    --surface:           #22190F;       /* card */
+    --surface-raised:    #2B2013;       /* QR card, modals */
+    --surface-sunken:    #1B140D;       /* inputs */
+    --foreground:        #F3E7CE;       /* cream ink (AAA) */
+    --foreground-muted:  #C9B79A;       /* muted (AAA) */
     --foreground-body:   #E4D3B7;
     --border:            #3A2C1C;
     --border-strong:     #4E3B26;
 
-    --primary:           #E9D8C4;
+    --primary:           #E9D8C4;        /* light kopi reads as ink on dark */
     --primary-foreground:#2A1A12;
     --accent:            #D2462C;
     --accent-foreground: #FFFFFF;
@@ -148,7 +184,12 @@
   }
 }
 
+/* -----------------------------------------------------------------------------
+   3. TAILWIND @theme — expose tokens as utilities (bg-*, text-*, rounded-*, …)
+   `@theme inline` lets values reference the var()s above so dark mode flips.
+   --------------------------------------------------------------------------- */
 @theme inline {
+  /* surfaces & text */
   --color-background:        var(--background);
   --color-surface:           var(--surface);
   --color-surface-raised:    var(--surface-raised);
@@ -159,6 +200,7 @@
   --color-border:            var(--border);
   --color-border-strong:     var(--border-strong);
 
+  /* brand roles */
   --color-primary:           var(--primary);
   --color-primary-foreground:var(--primary-foreground);
   --color-accent:            var(--accent);
@@ -167,6 +209,7 @@
   --color-secondary-foreground:var(--secondary-foreground);
   --color-ring:              var(--ring);
 
+  /* full brand ramps (for fine control) */
   --color-kopi-50:  var(--kopi-50);
   --color-kopi-100: var(--kopi-100);
   --color-kopi-200: var(--kopi-200);
@@ -195,6 +238,7 @@
   --color-teh-400:  var(--teh-400);
   --color-teh-500:  var(--teh-500);
 
+  /* status */
   --color-paid:              var(--paid);
   --color-paid-bg:           var(--paid-bg);
   --color-paid-foreground:   var(--paid-foreground);
@@ -207,22 +251,28 @@
   --color-whatsapp:          var(--whatsapp);
   --color-whatsapp-foreground:var(--whatsapp-foreground);
 
+  /* fonts */
   --font-display: var(--kira-font-display);
   --font-sans:    var(--kira-font-sans);
   --font-mono:    var(--kira-font-mono);
 
+  /* radii */
   --radius-xs:  var(--kira-radius-xs);
   --radius-sm:  var(--kira-radius-sm);
   --radius-md:  var(--kira-radius-md);
   --radius-lg:  var(--kira-radius-lg);
   --radius-xl:  var(--kira-radius-xl);
 
+  /* shadows */
   --shadow-xs: var(--kira-shadow-xs);
   --shadow-sm: var(--kira-shadow-sm);
   --shadow-md: var(--kira-shadow-md);
   --shadow-lg: var(--kira-shadow-lg);
 }
 
+/* -----------------------------------------------------------------------------
+   4. BASE — set body type & background from tokens
+   --------------------------------------------------------------------------- */
 body {
   background: var(--background);
   color: var(--foreground-body);
@@ -237,40 +287,12 @@ h1, h2, h3, .font-display {
   letter-spacing: -0.01em;
 }
 
-.font-mono-amount {
-  font-family: var(--kira-font-mono);
-  font-variant-numeric: tabular-nums;
-}
-
-/* Subtle warm kopitiam grain on the app background. */
+/* Optional kopitiam texture: subtle warm grain on the app background.
+   Remove if you prefer flat. Pure CSS, no asset needed. */
 .kopi-grain {
   background-image:
     radial-gradient(rgb(var(--kira-shadow-color) / 0.035) 1px, transparent 1px);
   background-size: 4px 4px;
-}
-
-/* Thermal-receipt perforated top/bottom edge. */
-.receipt-edge {
-  --notch: 10px;
-  -webkit-mask:
-    radial-gradient(var(--notch) at var(--notch) 50%, transparent 98%, #000) left / 100% calc(2 * var(--notch)) repeat-y,
-    radial-gradient(var(--notch) at calc(100% - var(--notch)) 50%, transparent 98%, #000) right / 100% calc(2 * var(--notch)) repeat-y;
-  -webkit-mask-composite: source-in;
-  mask-composite: intersect;
-}
-
-/* LUNAS / PAID chop-stamp entrance */
-@keyframes stamp-in {
-  0%   { opacity: 0; transform: rotate(-20deg) scale(2.4); }
-  55%  { opacity: 1; transform: rotate(-11deg) scale(0.9); }
-  100% { opacity: 0.95; transform: rotate(-12deg) scale(1); }
-}
-.animate-stamp { animation: stamp-in 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
-
-/* Teh-tarik glass fill rise */
-@keyframes teh-rise {
-  from { transform: translateY(10%); }
-  to   { transform: translateY(0); }
 }
 
 @media (prefers-reduced-motion: reduce) {

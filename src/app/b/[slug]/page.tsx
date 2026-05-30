@@ -1,0 +1,139 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { Logo } from "@/components/Logo";
+import { Stamp } from "@/components/Stamp";
+import { TehGlass } from "@/components/TehGlass";
+import { StatusBadge } from "@/components/StatusBadge";
+import { card } from "@/components/ui";
+import { getBillBySlug } from "@/lib/db";
+import { computeProgress, formatMoney } from "@/lib/format";
+import { PayPanel } from "./PayPanel";
+
+export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const bill = await getBillBySlug(slug);
+  if (!bill) return { title: "Bill not found" };
+  return {
+    title: bill.title,
+    description: `${bill.organizer_name} is collecting ${formatMoney(bill.total_amount)} for ${bill.title}. Tap to pay your share.`,
+  };
+}
+
+export default async function BillPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const bill = await getBillBySlug(slug);
+  if (!bill) notFound();
+
+  const progress = computeProgress(bill, bill.participants);
+  const due = bill.due_date
+    ? new Date(bill.due_date).toLocaleDateString("en-MY", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      })
+    : null;
+
+  return (
+    <div className="mx-auto flex min-h-full w-full max-w-lg flex-col px-5">
+      <header className="flex items-center justify-between py-5">
+        <Logo />
+        <Link href="/create" className="text-sm font-semibold text-foreground-muted">
+          Start your own
+        </Link>
+      </header>
+
+      <main className="space-y-6 pb-16">
+        {/* Receipt */}
+        <section className={card + " overflow-hidden p-0"}>
+          <div className="receipt-edge bg-surface-raised px-6 pt-7 pb-6">
+            <p className="text-center font-mono-amount text-xs uppercase tracking-[0.3em] text-foreground-muted">
+              Kira-Kira
+            </p>
+            <h1 className="mt-1 text-center font-display text-2xl font-bold">
+              {bill.title}
+            </h1>
+            <p className="mt-1 text-center text-sm text-foreground-muted">
+              Collected by {bill.organizer_name}
+              {due ? ` · due ${due}` : ""}
+            </p>
+            {bill.description && (
+              <p className="mt-1 text-center text-sm text-foreground-body">
+                {bill.description}
+              </p>
+            )}
+
+            <div className="my-4 border-t border-dashed border-border" />
+
+            <ul className="space-y-2.5">
+              {bill.participants.map((p) => (
+                <li key={p.id} className="flex items-center justify-between gap-3">
+                  <span className="flex items-center gap-2">
+                    <span className="font-medium text-foreground">{p.name}</span>
+                    {p.status === "confirmed" && <Stamp className="scale-75" />}
+                  </span>
+                  <span className="flex items-center gap-2.5">
+                    <span className="font-mono-amount text-foreground-body">
+                      {formatMoney(p.amount_owed)}
+                    </span>
+                    <StatusBadge status={p.status} />
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="my-4 border-t border-dashed border-border" />
+
+            <div className="flex items-center justify-between font-display font-bold">
+              <span>Total</span>
+              <span className="font-mono-amount">{formatMoney(progress.total)}</span>
+            </div>
+            <div className="mt-1 flex items-center justify-between text-sm text-foreground-muted">
+              <span>Collected so far</span>
+              <span className="font-mono-amount">{formatMoney(progress.collected)}</span>
+            </div>
+          </div>
+        </section>
+
+        {/* Progress glance */}
+        <section className={card + " flex items-center gap-4 p-5"}>
+          <TehGlass percent={progress.percent} className="h-24 w-20 shrink-0" />
+          <div>
+            <p className="font-display text-lg font-bold">
+              {progress.percent === 100
+                ? "Semua dah settle! 🎉"
+                : `${formatMoney(progress.remaining)} to go`}
+            </p>
+            <p className="text-sm text-foreground-body">
+              {progress.paidCount} of {progress.count} settled
+              {progress.pendingCount > 0 ? ` · ${progress.pendingCount} checking` : ""}
+            </p>
+          </div>
+        </section>
+
+        {/* Pay */}
+        <PayPanel
+          slug={bill.slug}
+          paymentHandle={bill.payment_handle}
+          qrPayload={bill.payment_qr_payload ?? `kira:${bill.slug}`}
+          participants={bill.participants.map((p) => ({
+            id: p.id,
+            name: p.name,
+            amount: p.amount_owed,
+            status: p.status,
+          }))}
+        />
+      </main>
+    </div>
+  );
+}

@@ -19,14 +19,14 @@ function service() {
 // PostgREST returns numeric columns as strings to preserve precision.
 function mapBill(row: Record<string, unknown>): Bill {
   return {
-    ...(row as Bill),
+    ...(row as unknown as Bill),
     total_amount: Number(row.total_amount),
   };
 }
 
 function mapParticipant(row: Record<string, unknown>): Participant {
   return {
-    ...(row as Participant),
+    ...(row as unknown as Participant),
     amount_owed: Number(row.amount_owed),
   };
 }
@@ -159,7 +159,7 @@ export async function setConfirmation(
     .update(
       confirmed
         ? { status: "confirmed", confirmed_at: new Date().toISOString() }
-        : { status: "claimed", confirmed_at: null },
+        : { status: "unpaid", confirmed_at: null, claimed_at: null, proof_url: null },
     )
     .eq("id", participantId)
     .eq("bill_id", bill.id);
