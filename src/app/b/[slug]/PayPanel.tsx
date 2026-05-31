@@ -4,6 +4,8 @@ import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { claimPaymentAction, uploadProofAction } from "@/app/actions";
 import { QrCard } from "@/components/QrCard";
+import { Stamp } from "@/components/Stamp";
+import { Confetti } from "@/components/Confetti";
 import { btn, card } from "@/components/ui";
 import { formatMoney } from "@/lib/format";
 import type { ParticipantStatus } from "@/lib/types";
@@ -29,6 +31,7 @@ export function PayPanel({
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [justPaid, setJustPaid] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -53,12 +56,38 @@ export function PayPanel({
       }
       const res = await claimPaymentAction(slug, selected.id, proofUrl);
       if (res.ok) {
+        setJustPaid(selected.name);
         setSelectedId(null);
-        router.refresh();
       } else {
         setError(res.error);
       }
     });
+  }
+
+  function closeCelebration() {
+    setJustPaid(null);
+    router.refresh();
+  }
+
+  if (justPaid) {
+    return (
+      <section className={card + " flex flex-col items-center py-8 text-center"}>
+        <Confetti fire />
+        <Stamp label="DAH BAYAR" className="mb-4" />
+        <h2 className="font-display text-2xl font-bold">Settled lah! 🎉</h2>
+        <p className="mt-1 max-w-xs text-foreground-body">
+          Terima kasih, {justPaid}. The organizer will confirm shortly — no more
+          chasing.
+        </p>
+        <button
+          type="button"
+          onClick={closeCelebration}
+          className={btn.primary + " mt-6"}
+        >
+          Done
+        </button>
+      </section>
+    );
   }
 
   return (

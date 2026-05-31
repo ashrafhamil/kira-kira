@@ -66,14 +66,14 @@ export async function createBill(
     .insert({
       slug,
       manage_token: manageToken,
-      title: input.title.trim(),
-      description: input.description?.trim() || null,
+      title: input.title.trim().slice(0, 120),
+      description: input.description?.trim().slice(0, 280) || null,
       currency: input.currency || "MYR",
       total_amount: total,
       split_type: input.splitType,
       due_date: input.dueDate || null,
-      organizer_name: input.organizerName.trim(),
-      payment_handle: input.paymentHandle?.trim() || null,
+      organizer_name: input.organizerName.trim().slice(0, 60),
+      payment_handle: input.paymentHandle?.trim().slice(0, 40) || null,
       payment_qr_payload: buildQrPayload(input.paymentHandle, total),
     })
     .select()
@@ -82,8 +82,8 @@ export async function createBill(
 
   const rows = input.participants.map((p, i) => ({
     bill_id: bill.id,
-    name: p.name.trim(),
-    phone: p.phone?.trim() || null,
+    name: p.name.trim().slice(0, 60),
+    phone: p.phone?.trim().slice(0, 30) || null,
     amount_owed: amounts[i] ?? 0,
     sort_order: i,
   }));
@@ -123,21 +123,47 @@ export function getBillByManageToken(token: string) {
   return fetchBill("manage_token", token);
 }
 
-/** A member taps "I've paid". Moves unpaid -> claimed (awaiting confirmation). */
+/** A member taps "I've paid". Moves unpaid -> claimed (awaiting confirmation).
+ *  Authorized via the bill `slug`: the participant must belong to that bill, and
+ *  an already-confirmed row can't be silently reset. proofUrl is only accepted
+ *  if it points at our own public proofs bucket. */
 export async function claimPayment(
+  slug: string,
   participantId: string,
   proofUrl?: string | null,
 ): Promise<void> {
   const supabase = service();
+  const { data: bill } = await supabase
+    .from("bills")
+    .select("id")
+    .eq("slug", slug)
+    .maybeSingle();
+  if (!bill) throw new Error("Bill not found");
+
+  const base = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+  const safeProof =
+    proofUrl && base && proofUrl.startsWith(`${base}/storage/v1/object/public/proofs/`)
+      ? proofUrl
+      : null;
+
   const { error } = await supabase
     .from("participants")
     .update({
       status: "claimed",
-      proof_url: proofUrl || null,
+      proof_url: safeProof,
       claimed_at: new Date().toISOString(),
     })
-    .eq("id", participantId);
+    .eq("id", participantId)
+    .eq("bill_id", bill.id)
+    .neq("status", "confirmed");
   if (error) throw error;
+}
+
+/** Confirm a bill exists for a given slug (used by the upload action). */
+export async function billExists(slug: string): Promise<boolean> {
+  const supabase = service();
+  const { data } = await supabase.from("bills").select("id").eq("slug", slug).maybeSingle();
+  return !!data;
 }
 
 /** Organizer confirms (or un-confirms) a payment. Guarded by manage token. */
