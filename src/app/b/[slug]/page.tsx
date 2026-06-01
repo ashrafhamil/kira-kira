@@ -90,7 +90,7 @@ export default async function BillPage({
                     <span className="font-mono-amount text-foreground-body">
                       {formatMoney(p.amount_owed)}
                     </span>
-                    <StatusBadge status={p.status} />
+                    {p.status !== "confirmed" && <StatusBadge status={p.status} />}
                   </span>
                 </li>
               ))}
@@ -98,9 +98,11 @@ export default async function BillPage({
 
             <div className="my-4 border-t border-dashed border-border" />
 
-            <div className="flex items-center justify-between font-display font-bold">
-              <span>Total</span>
-              <span className="font-mono-amount">{formatMoney(progress.total)}</span>
+            <div className="flex items-center justify-between">
+              <span className="font-display text-base font-bold">Total</span>
+              <span className="font-mono-amount text-3xl font-bold text-foreground">
+                {formatMoney(progress.total)}
+              </span>
             </div>
             <div className="mt-1 flex items-center justify-between text-sm text-foreground-muted">
               <span>Collected so far</span>

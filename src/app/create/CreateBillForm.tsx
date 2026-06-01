@@ -241,7 +241,7 @@ export function CreateBillForm() {
                   />
                 ) : (
                   <div
-                    className="flex items-center justify-end rounded-[var(--radius-sm)] bg-surface-sunken px-3 py-2.5 font-mono-amount text-sm text-foreground-muted sm:w-28"
+                    className="flex items-center justify-end rounded-[var(--radius-sm)] border border-dashed border-border px-3 py-2.5 font-mono-amount text-sm text-foreground-muted sm:w-28"
                     aria-label="Auto-calculated share"
                   >
                     {p.name.trim() && parseFloat(totalAmount) > 0

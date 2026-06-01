@@ -29,8 +29,8 @@ export function QrCard({
 
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-surface-raised shadow-[var(--shadow-md)]">
-      {/* DuitNow ribbon */}
-      <div className="flex items-center justify-between bg-gradient-to-r from-[#ED1C24] via-[#F26522] to-[#FBB040] px-4 py-2.5 text-white">
+      {/* DuitNow ribbon — brand-tinted (sambal → teh) to stay on-palette */}
+      <div className="flex items-center justify-between bg-gradient-to-r from-sambal-500 via-sambal-400 to-teh-400 px-4 py-2 text-white">
         <span className="font-display text-sm font-bold tracking-wide">DuitNow</span>
         <span className="rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider">
           Demo QR

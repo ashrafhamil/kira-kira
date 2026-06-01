@@ -91,7 +91,7 @@ export default function Home() {
             <TehGlass percent={68} className="h-12 w-10 shrink-0" />
             <div className="text-sm">
               <p className="font-semibold text-foreground">68% collected</p>
-              <p className="font-mono-amount text-foreground-muted">RM 58 / 86</p>
+              <p className="font-mono-amount text-foreground-muted">RM 58.00 / 86.00</p>
             </div>
           </div>
         </div>
@@ -165,7 +165,18 @@ export default function Home() {
 
       <footer className="mt-auto flex flex-col items-center gap-2 py-10 text-center text-sm text-foreground-muted">
         <Logo />
-        <p>Built for the KrackedDevs Split-Bill bounty. Jom settle, no drama.</p>
+        <p>
+          Built for the{" "}
+          <a
+            href="https://krackeddevs.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-sambal-600 hover:underline"
+          >
+            KrackedDevs
+          </a>{" "}
+          Split-Bill bounty. Jom settle, no drama.
+        </p>
       </footer>
     </div>
   );
