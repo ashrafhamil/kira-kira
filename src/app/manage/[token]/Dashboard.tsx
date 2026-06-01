@@ -8,6 +8,7 @@ import { TehGlass } from "@/components/TehGlass";
 import { StatusBadge } from "@/components/StatusBadge";
 import { CopyButton } from "@/components/CopyButton";
 import { Confetti } from "@/components/Confetti";
+import { Toast } from "@/components/Toast";
 import { btn, card } from "@/components/ui";
 import { formatMoney, round2, waLink } from "@/lib/format";
 import { reminderText } from "@/lib/copy";
@@ -43,7 +44,6 @@ export function Dashboard({
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [busyId, setBusyId] = useState<string | null>(null);
-  const [showNew, setShowNew] = useState(isNew);
 
   // Remember this bill on the device so the organizer can always find it again.
   useEffect(() => {
@@ -96,27 +96,10 @@ export function Dashboard({
         <p className="text-foreground-body">{title}</p>
       </div>
 
-      {showNew && (
-        <div className="flex items-start gap-3 rounded-[var(--radius-md)] border border-border border-l-4 border-l-secondary bg-surface px-4 py-3 shadow-[var(--shadow-xs)]">
-          <span className="text-lg">🎉</span>
-          <div className="flex-1 text-sm">
-            <p className="font-semibold text-foreground">Bill&rsquo;s live! Save your private link.</p>
-            <p className="text-foreground-body">
-              This dashboard is the only place you confirm payments — and there&rsquo;s
-              no login to get back in. Copy or bookmark the private link below before
-              you share.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setShowNew(false)}
-            aria-label="Dismiss"
-            className="text-foreground-muted hover:text-foreground"
-          >
-            ✕
-          </button>
-        </div>
-      )}
+      <Toast
+        show={!!isNew}
+        message="Bill's live! Save your private link below — it's the only way back in."
+      />
 
       {/* Share */}
       <section className={card + " p-5"}>

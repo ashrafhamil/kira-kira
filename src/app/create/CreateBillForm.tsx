@@ -232,7 +232,7 @@ export function CreateBillForm() {
                   value={p.phone}
                   onChange={(e) => updatePerson(i, { phone: e.target.value })}
                 />
-                {splitType === "custom" && (
+                {splitType === "custom" ? (
                   <input
                     className={input + " sm:w-28"}
                     placeholder="RM"
@@ -240,6 +240,15 @@ export function CreateBillForm() {
                     value={p.amount}
                     onChange={(e) => updatePerson(i, { amount: e.target.value })}
                   />
+                ) : (
+                  <div
+                    className="flex items-center justify-end rounded-[var(--radius-sm)] bg-surface-sunken px-3 py-2.5 font-mono-amount text-sm text-foreground-muted sm:w-28"
+                    aria-label="Auto-calculated share"
+                  >
+                    {p.name.trim() && parseFloat(totalAmount) > 0
+                      ? formatMoney(perHead)
+                      : "—"}
+                  </div>
                 )}
               </div>
               <button
