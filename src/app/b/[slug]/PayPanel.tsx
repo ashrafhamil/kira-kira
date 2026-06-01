@@ -9,6 +9,7 @@ import { Stamp } from "@/components/Stamp";
 import { Confetti } from "@/components/Confetti";
 import { btn, card } from "@/components/ui";
 import { formatMoney } from "@/lib/format";
+import { billStrings, type Lang } from "@/lib/i18n";
 import type { ParticipantStatus } from "@/lib/types";
 
 interface Row {
@@ -20,15 +21,18 @@ interface Row {
 
 export function PayPanel({
   slug,
+  lang,
   paymentHandle,
   qrPayload,
   participants,
 }: {
   slug: string;
+  lang: Lang;
   paymentHandle: string | null;
   qrPayload: string;
   participants: Row[];
 }) {
+  const t = billStrings[lang];
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -74,18 +78,15 @@ export function PayPanel({
     return (
       <section className={card + " flex flex-col items-center py-8 text-center"}>
         <Confetti fire />
-        <Stamp label="DAH BAYAR" className="mb-4" />
-        <h2 className="font-display text-2xl font-bold">Settled lah!</h2>
-        <p className="mt-1 max-w-xs text-foreground-body">
-          Terima kasih, {justPaid}. The organizer will confirm shortly — no more
-          chasing.
-        </p>
+        <Stamp label={t.celebrateStamp} className="mb-4" />
+        <h2 className="font-display text-2xl font-bold">{t.celebrateTitle}</h2>
+        <p className="mt-1 max-w-xs text-foreground-body">{t.celebrateBody(justPaid)}</p>
         <button
           type="button"
           onClick={closeCelebration}
           className={btn.primary + " mt-6"}
         >
-          Done
+          {t.done}
         </button>
       </section>
     );
@@ -93,11 +94,8 @@ export function PayPanel({
 
   return (
     <section className={card + " p-5"}>
-      <h2 className="font-display text-lg font-bold">Your share</h2>
-      <p className="mt-1 text-sm text-foreground-body">
-        Find your name, scan the DuitNow QR, then tap{" "}
-        <span className="font-semibold">Dah bayar</span>.
-      </p>
+      <h2 className="font-display text-lg font-bold">{t.yourShare}</h2>
+      <p className="mt-1 text-sm text-foreground-body">{t.findYourName}</p>
 
       <div className="mt-4 flex flex-wrap gap-2">
         {participants.map((p) => {
@@ -130,13 +128,13 @@ export function PayPanel({
 
       {selected && selected.status === "confirmed" && (
         <p className="mt-5 rounded-[var(--radius-sm)] bg-paid-bg px-4 py-3 text-sm font-medium text-paid-foreground">
-          You&rsquo;re all settled. Nothing to pay.
+          {t.allSettledMember}
         </p>
       )}
 
       {selected && selected.status === "claimed" && (
         <p className="mt-5 rounded-[var(--radius-sm)] bg-pending-bg px-4 py-3 text-sm font-medium text-pending-foreground">
-          Marked as paid — the organizer will confirm shortly. Terima kasih!
+          {t.markedPaid}
         </p>
       )}
 
@@ -144,7 +142,7 @@ export function PayPanel({
         <div className="mt-5 space-y-4">
           <div className="text-center">
             <p className="text-sm text-foreground-muted">
-              {selected.name}, your share is
+              {t.yourShareIs(selected.name)}
             </p>
             <p className="font-mono-amount text-3xl font-bold text-foreground">
               {formatMoney(selected.amount)}
@@ -155,8 +153,8 @@ export function PayPanel({
 
           <div>
             <label className="mb-1 block text-sm font-semibold text-foreground-body">
-              Attach payment screenshot{" "}
-              <span className="text-foreground-muted">(optional)</span>
+              {t.attachProof}{" "}
+              <span className="text-foreground-muted">{t.optional}</span>
             </label>
             <input
               ref={fileRef}
@@ -179,10 +177,10 @@ export function PayPanel({
             className={btn.accent + " w-full !py-3.5 text-base"}
           >
             {pending ? (
-              "Sending…"
+              t.sending
             ) : (
               <>
-                <Check className="size-4" aria-hidden /> Dah bayar
+                <Check className="size-4" aria-hidden /> {t.payNow}
               </>
             )}
           </button>

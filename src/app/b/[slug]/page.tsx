@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { ReceiptText } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { LangToggle } from "@/components/LangToggle";
 import { Stamp } from "@/components/Stamp";
 import { TehGlass } from "@/components/TehGlass";
 import { StatusBadge } from "@/components/StatusBadge";
 import { card } from "@/components/ui";
 import { getBillBySlug } from "@/lib/db";
 import { computeProgress, formatMoney } from "@/lib/format";
+import { billStrings, normalizeLang } from "@/lib/i18n";
 import { PayPanel } from "./PayPanel";
 
 export const dynamic = "force-dynamic";
@@ -37,6 +40,8 @@ export default async function BillPage({
   const bill = await getBillBySlug(slug);
   if (!bill) notFound();
 
+  const lang = normalizeLang((await cookies()).get("kira-lang")?.value);
+  const t = billStrings[lang];
   const progress = computeProgress(bill, bill.participants);
   const due = bill.due_date
     ? new Date(bill.due_date).toLocaleDateString("en-MY", {
@@ -50,10 +55,14 @@ export default async function BillPage({
     <div className="mx-auto flex min-h-full w-full max-w-lg flex-col px-5">
       <header className="flex items-center justify-between py-5">
         <Logo />
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <LangToggle
+            lang={lang}
+            className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2.5 py-2 text-xs font-semibold text-foreground hover:bg-surface-sunken"
+          />
           <ThemeToggle />
           <Link href="/create" className="text-sm font-semibold text-foreground-muted">
-            Start your own
+            {t.startOwn}
           </Link>
         </div>
       </header>
@@ -69,7 +78,7 @@ export default async function BillPage({
               {bill.title}
             </h1>
             <p className="mt-1 text-center text-sm text-foreground-muted">
-              Collected by {bill.organizer_name}
+              {t.collectedBy(bill.organizer_name)}
               {due ? ` · due ${due}` : ""}
             </p>
             {bill.description && (
@@ -85,13 +94,17 @@ export default async function BillPage({
                 <li key={p.id} className="flex items-center justify-between gap-3">
                   <span className="flex items-center gap-2">
                     <span className="font-medium text-foreground">{p.name}</span>
-                    {p.status === "confirmed" && <Stamp className="scale-75" />}
+                    {p.status === "confirmed" && (
+                      <Stamp label={t.receiptStamp} className="scale-75" />
+                    )}
                   </span>
                   <span className="flex items-center gap-2.5">
                     <span className="font-mono-amount text-foreground-body">
                       {formatMoney(p.amount_owed)}
                     </span>
-                    {p.status !== "confirmed" && <StatusBadge status={p.status} />}
+                    {p.status !== "confirmed" && (
+                      <StatusBadge status={p.status} labels={t.status} />
+                    )}
                   </span>
                 </li>
               ))}
@@ -100,13 +113,13 @@ export default async function BillPage({
             <div className="my-4 border-t border-dashed border-border" />
 
             <div className="flex items-center justify-between">
-              <span className="font-display text-base font-bold">Total</span>
+              <span className="font-display text-base font-bold">{t.total}</span>
               <span className="font-mono-amount text-3xl font-bold text-foreground">
                 {formatMoney(progress.total)}
               </span>
             </div>
             <div className="mt-1 flex items-center justify-between text-sm text-foreground-muted">
-              <span>Collected so far</span>
+              <span>{t.collectedSoFar}</span>
               <span className="font-mono-amount">{formatMoney(progress.collected)}</span>
             </div>
           </div>
@@ -117,7 +130,7 @@ export default async function BillPage({
           <section className={card + " p-5"}>
             <h2 className="flex items-center gap-2 font-display text-lg font-bold">
               <ReceiptText className="size-4 text-kopi-500" aria-hidden />
-              The damage
+              {t.theDamage}
             </h2>
             <ul className="mt-3 space-y-2.5">
               {bill.items.map((it) => {
@@ -132,7 +145,7 @@ export default async function BillPage({
                     <div className="min-w-0">
                       <p className="font-medium text-foreground">{it.name}</p>
                       <p className="text-xs text-foreground-muted">
-                        {names.length ? names.join(", ") : "Unassigned"}
+                        {names.length ? names.join(", ") : t.unassigned}
                       </p>
                     </div>
                     <span className="font-mono-amount shrink-0 text-foreground-body">
@@ -151,12 +164,12 @@ export default async function BillPage({
           <div>
             <p className="font-display text-lg font-bold">
               {progress.percent === 100
-                ? "Semua dah settle!"
-                : `${formatMoney(progress.remaining)} to go`}
+                ? t.allSettled
+                : t.toGo(formatMoney(progress.remaining))}
             </p>
             <p className="text-sm text-foreground-body">
-              {progress.paidCount} of {progress.count} settled
-              {progress.pendingCount > 0 ? ` · ${progress.pendingCount} checking` : ""}
+              {t.settledCount(progress.paidCount, progress.count)}
+              {progress.pendingCount > 0 ? t.checkingSuffix(progress.pendingCount) : ""}
             </p>
           </div>
         </section>
@@ -164,6 +177,7 @@ export default async function BillPage({
         {/* Pay */}
         <PayPanel
           slug={bill.slug}
+          lang={lang}
           paymentHandle={bill.payment_handle}
           qrPayload={bill.payment_qr_payload ?? `kira:${bill.slug}`}
           participants={bill.participants.map((p) => ({
