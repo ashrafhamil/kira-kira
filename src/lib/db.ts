@@ -4,6 +4,7 @@ import { newManageToken, newSlug } from "./ids";
 import { round2 } from "./format";
 import type {
   Bill,
+  BillItem,
   BillWithParticipants,
   CreateBillInput,
   Participant,
@@ -31,6 +32,14 @@ function mapParticipant(row: Record<string, unknown>): Participant {
   };
 }
 
+function mapItem(row: Record<string, unknown>): BillItem {
+  return {
+    ...(row as unknown as BillItem),
+    price: Number(row.price),
+    shared_by: (row.shared_by as string[]) ?? [],
+  };
+}
+
 function buildQrPayload(handle: string | undefined, amount: number): string {
   const to = (handle || "kira-kira").trim();
   return `duitnow://pay?to=${encodeURIComponent(to)}&amount=${amount.toFixed(2)}&ref=KIRA`;
@@ -53,13 +62,35 @@ function splitAmounts(input: CreateBillInput): { amounts: number[]; total: numbe
   return { amounts, total };
 }
 
+/** By-item split: each item's price divides equally among the participants who
+ *  share it (indexes); per-item rounding drift lands on the last sharer. */
+function byItemAmounts(input: CreateBillInput): { amounts: number[]; total: number } {
+  const n = input.participants.length;
+  const amounts = Array(n).fill(0);
+  let total = 0;
+  for (const it of input.items ?? []) {
+    const price = round2(Number(it.price) || 0);
+    total = round2(total + price);
+    const sharers = (it.sharedBy ?? []).filter((i) => i >= 0 && i < n);
+    if (sharers.length === 0) continue;
+    const per = round2(price / sharers.length);
+    sharers.forEach((idx, k) => {
+      const share =
+        k === sharers.length - 1 ? round2(price - per * (sharers.length - 1)) : per;
+      amounts[idx] = round2(amounts[idx] + share);
+    });
+  }
+  return { amounts, total };
+}
+
 export async function createBill(
   input: CreateBillInput,
 ): Promise<{ slug: string; manageToken: string }> {
   const supabase = service();
   const slug = newSlug();
   const manageToken = newManageToken();
-  const { amounts, total } = splitAmounts(input);
+  const { amounts, total } =
+    input.splitType === "by_item" ? byItemAmounts(input) : splitAmounts(input);
 
   const { data: bill, error } = await supabase
     .from("bills")
@@ -87,8 +118,30 @@ export async function createBill(
     amount_owed: amounts[i] ?? 0,
     sort_order: i,
   }));
-  const { error: pErr } = await supabase.from("participants").insert(rows);
+  const { data: insertedP, error: pErr } = await supabase
+    .from("participants")
+    .insert(rows)
+    .select("id, sort_order");
   if (pErr) throw pErr;
+
+  if (input.splitType === "by_item" && input.items?.length) {
+    const n = input.participants.length;
+    const idByIndex = new Map(
+      (insertedP ?? []).map((p) => [p.sort_order as number, p.id as string]),
+    );
+    const itemRows = input.items.map((it, idx) => ({
+      bill_id: bill.id,
+      name: String(it.name).trim().slice(0, 60),
+      price: round2(Number(it.price) || 0),
+      shared_by: (it.sharedBy ?? [])
+        .filter((i) => i >= 0 && i < n)
+        .map((i) => idByIndex.get(i))
+        .filter((id): id is string => Boolean(id)),
+      sort_order: idx,
+    }));
+    const { error: iErr } = await supabase.from("bill_items").insert(itemRows);
+    if (iErr) throw iErr;
+  }
 
   return { slug, manageToken };
 }
@@ -109,9 +162,15 @@ async function fetchBill(
     .select("*")
     .eq("bill_id", bill.id)
     .order("sort_order", { ascending: true });
+  const { data: items } = await supabase
+    .from("bill_items")
+    .select("*")
+    .eq("bill_id", bill.id)
+    .order("sort_order", { ascending: true });
   return {
     ...mapBill(bill),
     participants: (participants ?? []).map(mapParticipant),
+    items: (items ?? []).map(mapItem),
   };
 }
 

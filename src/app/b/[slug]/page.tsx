@@ -111,6 +111,36 @@ export default async function BillPage({
           </div>
         </section>
 
+        {/* Item breakdown (by-item split) */}
+        {bill.items.length > 0 && (
+          <section className={card + " p-5"}>
+            <h2 className="font-display text-lg font-bold">The damage 🧾</h2>
+            <ul className="mt-3 space-y-2.5">
+              {bill.items.map((it) => {
+                const names = it.shared_by
+                  .map((id) => bill.participants.find((p) => p.id === id)?.name)
+                  .filter(Boolean);
+                return (
+                  <li
+                    key={it.id}
+                    className="flex items-start justify-between gap-3 border-b border-dashed border-border pb-2.5 last:border-0 last:pb-0"
+                  >
+                    <div className="min-w-0">
+                      <p className="font-medium text-foreground">{it.name}</p>
+                      <p className="text-xs text-foreground-muted">
+                        {names.length ? names.join(", ") : "Unassigned"}
+                      </p>
+                    </div>
+                    <span className="font-mono-amount shrink-0 text-foreground-body">
+                      {formatMoney(it.price)}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        )}
+
         {/* Progress glance */}
         <section className={card + " flex items-center gap-4 p-5"}>
           <TehGlass percent={progress.percent} className="h-24 w-20 shrink-0" />

@@ -6,6 +6,7 @@ import { createBillAction } from "@/app/actions";
 import { btn, card, input } from "@/components/ui";
 import { formatMoney, round2 } from "@/lib/format";
 import { rememberBill } from "@/lib/mybills";
+import { MAKAN_PRESETS } from "@/lib/makan";
 import type { SplitType } from "@/lib/types";
 
 interface Person {
@@ -14,12 +15,24 @@ interface Person {
   amount: string;
 }
 
+interface Item {
+  name: string;
+  price: string;
+  sharedBy: number[]; // people indexes
+}
+
 const TITLE_PRESETS = [
   "Mamak Supper 🍢",
   "Trip Genting 🚠",
   "Office Lunch 🍱",
   "Birthday Gift 🎁",
 ];
+
+const SPLIT_LABELS: Record<SplitType, string> = {
+  equal: "Equally",
+  custom: "Custom",
+  by_item: "By item",
+};
 
 export function CreateBillForm() {
   const router = useRouter();
@@ -36,6 +49,7 @@ export function CreateBillForm() {
     { name: "", phone: "", amount: "" },
     { name: "", phone: "", amount: "" },
   ]);
+  const [items, setItems] = useState<Item[]>([]);
 
   const customTotal = useMemo(
     () => round2(people.reduce((s, p) => s + (parseFloat(p.amount) || 0), 0)),
@@ -47,6 +61,31 @@ export function CreateBillForm() {
     return round2(t / namedCount);
   }, [totalAmount, namedCount]);
 
+  const byItemPerPerson = useMemo(() => {
+    const amounts = people.map(() => 0);
+    for (const it of items) {
+      const price = parseFloat(it.price) || 0;
+      const sharers = it.sharedBy.filter((i) => i >= 0 && i < people.length);
+      if (!sharers.length || price <= 0) continue;
+      const per = price / sharers.length;
+      sharers.forEach((idx) => {
+        amounts[idx] = round2(amounts[idx] + per);
+      });
+    }
+    return amounts;
+  }, [items, people]);
+  const byItemTotal = useMemo(
+    () => round2(items.reduce((s, it) => s + (parseFloat(it.price) || 0), 0)),
+    [items],
+  );
+
+  const displayTotal =
+    splitType === "equal"
+      ? parseFloat(totalAmount) || 0
+      : splitType === "custom"
+        ? customTotal
+        : byItemTotal;
+
   function updatePerson(i: number, patch: Partial<Person>) {
     setPeople((prev) => prev.map((p, idx) => (idx === i ? { ...p, ...patch } : p)));
   }
@@ -55,18 +94,88 @@ export function CreateBillForm() {
   }
   function removePerson(i: number) {
     setPeople((prev) => (prev.length > 1 ? prev.filter((_, idx) => idx !== i) : prev));
+    // drop this person from item assignments and reindex
+    setItems((prev) =>
+      prev.map((it) => ({
+        ...it,
+        sharedBy: it.sharedBy
+          .filter((x) => x !== i)
+          .map((x) => (x > i ? x - 1 : x)),
+      })),
+    );
+  }
+
+  function addItem() {
+    setItems((p) => [...p, { name: "", price: "", sharedBy: [] }]);
+  }
+  function addPreset(name: string, price: number) {
+    setItems((p) => [...p, { name, price: String(price), sharedBy: [] }]);
+  }
+  function updateItem(i: number, patch: Partial<Item>) {
+    setItems((prev) => prev.map((it, idx) => (idx === i ? { ...it, ...patch } : it)));
+  }
+  function removeItem(i: number) {
+    setItems((prev) => prev.filter((_, idx) => idx !== i));
+  }
+  function toggleItemPerson(itemIdx: number, personIdx: number) {
+    setItems((prev) =>
+      prev.map((it, idx) => {
+        if (idx !== itemIdx) return it;
+        const has = it.sharedBy.includes(personIdx);
+        return {
+          ...it,
+          sharedBy: has
+            ? it.sharedBy.filter((x) => x !== personIdx)
+            : [...it.sharedBy, personIdx],
+        };
+      }),
+    );
   }
 
   function submit() {
     setError(null);
-    const named = people.filter((p) => p.name.trim());
     if (!title.trim()) return setError("Give your bill a title first.");
     if (!organizerName.trim()) return setError("Tell us who's collecting.");
-    if (named.length === 0) return setError("Add at least one person.");
+
+    const namedWithIndex = people
+      .map((p, i) => ({ p, i }))
+      .filter(({ p }) => p.name.trim());
+    if (namedWithIndex.length === 0) return setError("Add at least one person.");
+
     if (splitType === "equal" && !(parseFloat(totalAmount) > 0))
       return setError("Pop in the total amount first.");
     if (splitType === "custom" && !(customTotal > 0))
       return setError("Add an amount for at least one person.");
+    if (splitType === "by_item") {
+      const ok = items.some(
+        (it) => (parseFloat(it.price) || 0) > 0 && it.sharedBy.length > 0,
+      );
+      if (!ok) return setError("Add an item and tap who shares it.");
+    }
+
+    // Map original people indexes -> submitted participant indexes (named only).
+    const indexMap = new Map<number, number>();
+    namedWithIndex.forEach(({ i }, newIdx) => indexMap.set(i, newIdx));
+
+    const participants = namedWithIndex.map(({ p }) => ({
+      name: p.name.trim(),
+      phone: p.phone.trim() || undefined,
+      amount: splitType === "custom" ? parseFloat(p.amount) || 0 : undefined,
+    }));
+
+    const submittedItems =
+      splitType === "by_item"
+        ? items
+            .filter((it) => (parseFloat(it.price) || 0) > 0)
+            .map((it) => ({
+              name: it.name.trim() || "Item",
+              price: parseFloat(it.price) || 0,
+              sharedBy: it.sharedBy
+                .map((oi) => indexMap.get(oi))
+                .filter((x): x is number => x !== undefined),
+            }))
+            .filter((it) => it.sharedBy.length > 0)
+        : undefined;
 
     startTransition(async () => {
       const res = await createBillAction({
@@ -76,12 +185,9 @@ export function CreateBillForm() {
         paymentHandle: paymentHandle.trim() || undefined,
         dueDate: null,
         splitType,
-        totalAmount: splitType === "equal" ? parseFloat(totalAmount) : customTotal,
-        participants: named.map((p) => ({
-          name: p.name.trim(),
-          phone: p.phone.trim() || undefined,
-          amount: splitType === "custom" ? parseFloat(p.amount) || 0 : undefined,
-        })),
+        totalAmount: displayTotal,
+        participants,
+        items: submittedItems,
       });
       if (res.ok) {
         rememberBill({ token: res.manageToken, title: title.trim() });
@@ -164,8 +270,8 @@ export function CreateBillForm() {
       {/* Split type */}
       <section className={card + " p-5"}>
         <h2 className="font-display text-lg font-bold">How to split?</h2>
-        <div className="mt-3 grid grid-cols-2 gap-2 rounded-[var(--radius-md)] bg-surface-sunken p-1">
-          {(["equal", "custom"] as const).map((t) => (
+        <div className="mt-3 grid grid-cols-3 gap-2 rounded-[var(--radius-md)] bg-surface-sunken p-1">
+          {(["equal", "custom", "by_item"] as const).map((t) => (
             <button
               key={t}
               type="button"
@@ -176,7 +282,7 @@ export function CreateBillForm() {
                   : "text-foreground-muted"
               }`}
             >
-              {t === "equal" ? "Split equally" : "Custom amounts"}
+              {SPLIT_LABELS[t]}
             </button>
           ))}
         </div>
@@ -204,6 +310,12 @@ export function CreateBillForm() {
             )}
           </div>
         )}
+        {splitType === "by_item" && (
+          <p className="mt-3 text-sm text-foreground-muted">
+            Add who&rsquo;s in below, then list what everyone ordered — we&rsquo;ll
+            split each item among whoever shared it.
+          </p>
+        )}
       </section>
 
       {/* People */}
@@ -211,7 +323,7 @@ export function CreateBillForm() {
         <div className="flex items-center justify-between">
           <h2 className="font-display text-lg font-bold">Who&rsquo;s in?</h2>
           <span className="text-sm text-foreground-muted">
-            Total {formatMoney(splitType === "equal" ? parseFloat(totalAmount) || 0 : customTotal)}
+            Total {formatMoney(displayTotal)}
           </span>
         </div>
         <div className="mt-4 space-y-2.5">
@@ -244,9 +356,13 @@ export function CreateBillForm() {
                     className="flex items-center justify-end rounded-[var(--radius-sm)] border border-dashed border-border px-3 py-2.5 font-mono-amount text-sm text-foreground-muted sm:w-28"
                     aria-label="Auto-calculated share"
                   >
-                    {p.name.trim() && parseFloat(totalAmount) > 0
-                      ? formatMoney(perHead)
-                      : "—"}
+                    {!p.name.trim()
+                      ? "—"
+                      : splitType === "equal"
+                        ? parseFloat(totalAmount) > 0
+                          ? formatMoney(perHead)
+                          : "—"
+                        : formatMoney(byItemPerPerson[i])}
                   </div>
                 )}
               </div>
@@ -269,6 +385,110 @@ export function CreateBillForm() {
           + Add another person
         </button>
       </section>
+
+      {/* Items (by-item split) */}
+      {splitType === "by_item" && (
+        <section className={card + " p-5"}>
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-lg font-bold">
+              What did everyone makan? 🍜
+            </h2>
+            <span className="text-sm text-foreground-muted">
+              Total {formatMoney(byItemTotal)}
+            </span>
+          </div>
+
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {MAKAN_PRESETS.map((m) => (
+              <button
+                key={m.name}
+                type="button"
+                onClick={() => addPreset(m.name, m.price)}
+                className="rounded-full border border-border bg-surface px-2.5 py-1 text-xs text-foreground-body hover:bg-surface-sunken"
+              >
+                {m.name}{" "}
+                <span className="text-foreground-muted">RM{m.price.toFixed(2)}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-4 space-y-3">
+            {items.length === 0 && (
+              <p className="text-sm text-foreground-muted">
+                Tap a makan chip above, or add an item.
+              </p>
+            )}
+            {items.map((it, i) => {
+              const price = parseFloat(it.price) || 0;
+              const sharers = it.sharedBy.length;
+              return (
+                <div
+                  key={i}
+                  className="rounded-[var(--radius-md)] border border-border bg-surface-raised p-3"
+                >
+                  <div className="flex items-center gap-2">
+                    <input
+                      className={input + " flex-1"}
+                      placeholder="Item (e.g. Roti Canai)"
+                      value={it.name}
+                      onChange={(e) => updateItem(i, { name: e.target.value })}
+                    />
+                    <input
+                      className={input + " w-24"}
+                      placeholder="RM"
+                      inputMode="decimal"
+                      value={it.price}
+                      onChange={(e) => updateItem(i, { price: e.target.value })}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeItem(i)}
+                      aria-label="Remove item"
+                      className="grid size-9 shrink-0 place-items-center rounded-full text-foreground-muted hover:bg-surface-sunken"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <div className="mt-2.5">
+                    <p className="mb-1.5 text-xs font-semibold text-foreground-muted">
+                      Shared by
+                      {sharers > 0 && price > 0
+                        ? ` · ${formatMoney(round2(price / sharers))} each`
+                        : ""}
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {people.map((p, pi) => {
+                        const on = it.sharedBy.includes(pi);
+                        return (
+                          <button
+                            key={pi}
+                            type="button"
+                            onClick={() => toggleItemPerson(i, pi)}
+                            className={`rounded-full border px-2.5 py-1 text-xs font-semibold transition ${
+                              on
+                                ? "border-accent bg-accent text-accent-foreground"
+                                : "border-border bg-surface text-foreground-body hover:bg-surface-sunken"
+                            }`}
+                          >
+                            {p.name.trim() || `Person ${pi + 1}`}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <button
+            type="button"
+            onClick={addItem}
+            className="mt-3 text-sm font-semibold text-secondary hover:underline"
+          >
+            + Add item
+          </button>
+        </section>
+      )}
 
       {error && (
         <p className="rounded-[var(--radius-sm)] bg-unpaid-bg px-4 py-3 text-sm font-medium text-unpaid-foreground">

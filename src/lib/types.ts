@@ -1,4 +1,4 @@
-export type SplitType = "equal" | "custom";
+export type SplitType = "equal" | "custom" | "by_item";
 export type ParticipantStatus = "unpaid" | "claimed" | "confirmed";
 
 export interface Bill {
@@ -32,8 +32,19 @@ export interface Participant {
   created_at: string;
 }
 
+export interface BillItem {
+  id: string;
+  bill_id: string;
+  name: string;
+  price: number;
+  shared_by: string[]; // participant ids
+  sort_order: number;
+  created_at: string;
+}
+
 export interface BillWithParticipants extends Bill {
   participants: Participant[];
+  items: BillItem[];
 }
 
 export interface BillProgress {
@@ -58,4 +69,6 @@ export interface CreateBillInput {
   splitType: SplitType;
   totalAmount: number;
   participants: { name: string; phone?: string; amount?: number }[];
+  // For by_item: line items, each shared by participant indexes.
+  items?: { name: string; price: number; sharedBy: number[] }[];
 }
