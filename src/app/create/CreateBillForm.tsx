@@ -30,7 +30,6 @@ export function CreateBillForm() {
   const [title, setTitle] = useState("");
   const [organizerName, setOrganizerName] = useState("");
   const [paymentHandle, setPaymentHandle] = useState("");
-  const [dueDate, setDueDate] = useState("");
   const [description, setDescription] = useState("");
   const [splitType, setSplitType] = useState<SplitType>("equal");
   const [totalAmount, setTotalAmount] = useState("");
@@ -76,7 +75,7 @@ export function CreateBillForm() {
         description: description.trim() || undefined,
         organizerName: organizerName.trim(),
         paymentHandle: paymentHandle.trim() || undefined,
-        dueDate: dueDate || null,
+        dueDate: null,
         splitType,
         totalAmount: splitType === "equal" ? parseFloat(totalAmount) : customTotal,
         participants: named.map((p) => ({
@@ -149,29 +148,16 @@ export function CreateBillForm() {
             </div>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div>
-              <label className="mb-1 block text-sm font-semibold text-foreground-body">
-                Due date <span className="text-foreground-muted">(optional)</span>
-              </label>
-              <input
-                type="date"
-                className={input}
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-semibold text-foreground-body">
-                Note <span className="text-foreground-muted">(optional)</span>
-              </label>
-              <input
-                className={input}
-                placeholder="e.g. incl. teh tarik x5"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-            </div>
+          <div>
+            <label className="mb-1 block text-sm font-semibold text-foreground-body">
+              Note <span className="text-foreground-muted">(optional)</span>
+            </label>
+            <input
+              className={input}
+              placeholder="e.g. incl. teh tarik x5"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
           </div>
         </div>
       </section>

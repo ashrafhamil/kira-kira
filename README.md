@@ -51,7 +51,7 @@ Someone always fronts the bill — for the mamak supper, the Genting trip, the o
 | # | Brief requirement | Where it lives |
 |---|---|---|
 | RE-01 | Organizer can create a bill | `/create` → `CreateBillForm` |
-| RE-02 | Bill has title, amount, participants, due date, description | create form fields |
+| RE-02 | Bill has title, amount, participants, description | create form fields |
 | RE-03 | Equal **or** custom split | split toggle; `splitAmounts()` in `src/lib/db.ts` |
 | RE-04 | Generates a shareable bill/payment link | `/b/[slug]` (unguessable slug) |
 | RE-05 | Members view the bill & confirm payment | `/b/[slug]` → `PayPanel` ("Dah bayar ✅") |
