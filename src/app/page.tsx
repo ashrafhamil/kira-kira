@@ -3,6 +3,7 @@ import { Logo } from "@/components/Logo";
 import { TehGlass } from "@/components/TehGlass";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { MyBills } from "@/components/MyBills";
 import { btn, card } from "@/components/ui";
 
 export default function Home() {
@@ -53,8 +54,8 @@ export default function Home() {
         </div>
 
         {/* Hero visual: mini receipt + glass */}
-        <div className="relative">
-          <div className={card + " relative z-10 mx-auto max-w-sm overflow-hidden"}>
+        <div className="flex flex-col items-center gap-4">
+          <div className={card + " w-full max-w-sm overflow-hidden"}>
             <div className="receipt-edge bg-surface-raised px-6 pt-6 pb-7">
               <p className="text-center font-display text-lg font-bold">
                 Mamak Supper 🍢
@@ -86,14 +87,17 @@ export default function Home() {
               ))}
             </div>
           </div>
-          <div className="absolute -bottom-7 -left-7 -z-10 hidden w-24 rounded-2xl border border-border bg-surface p-2 shadow-[var(--shadow-md)] sm:block">
-            <TehGlass percent={68} className="w-full" />
-            <p className="mt-1 text-center text-[11px] font-semibold text-foreground-muted">
-              RM 58 / 86
-            </p>
+          <div className="flex items-center gap-3 rounded-2xl border border-border bg-surface px-4 py-2.5 shadow-[var(--shadow-sm)]">
+            <TehGlass percent={68} className="h-12 w-10 shrink-0" />
+            <div className="text-sm">
+              <p className="font-semibold text-foreground">68% collected</p>
+              <p className="font-mono-amount text-foreground-muted">RM 58 / 86</p>
+            </div>
           </div>
         </div>
       </section>
+
+      <MyBills className="py-4" />
 
       {/* How it works */}
       <section id="how" className="py-12">

@@ -10,17 +10,22 @@ export const dynamic = "force-dynamic";
 
 export default async function ManagePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ token: string }>;
+  searchParams: Promise<{ new?: string }>;
 }) {
   const { token } = await params;
+  const { new: isNew } = await searchParams;
   const bill = await getBillByManageToken(token);
   if (!bill) notFound();
 
   const h = await headers();
   const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
   const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
-  const shareUrl = `${proto}://${host}/b/${bill.slug}`;
+  const origin = `${proto}://${host}`;
+  const shareUrl = `${origin}/b/${bill.slug}`;
+  const manageUrl = `${origin}/manage/${token}`;
 
   return (
     <div className="mx-auto flex min-h-full w-full max-w-lg flex-col px-5">
@@ -37,6 +42,8 @@ export default async function ManagePage({
         <Dashboard
           manageToken={token}
           shareUrl={shareUrl}
+          manageUrl={manageUrl}
+          isNew={isNew === "1"}
           title={bill.title}
           organizerName={bill.organizer_name}
           totalAmount={bill.total_amount}

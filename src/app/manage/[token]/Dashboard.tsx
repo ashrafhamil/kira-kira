@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { confirmPaymentAction } from "@/app/actions";
+import { rememberBill } from "@/lib/mybills";
 import { TehGlass } from "@/components/TehGlass";
 import { StatusBadge } from "@/components/StatusBadge";
 import { CopyButton } from "@/components/CopyButton";
@@ -24,12 +25,16 @@ interface Row {
 export function Dashboard({
   manageToken,
   shareUrl,
+  manageUrl,
+  isNew,
   title,
   totalAmount,
   participants,
 }: {
   manageToken: string;
   shareUrl: string;
+  manageUrl: string;
+  isNew?: boolean;
   title: string;
   organizerName: string;
   totalAmount: number;
@@ -38,6 +43,12 @@ export function Dashboard({
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [showNew, setShowNew] = useState(isNew);
+
+  // Remember this bill on the device so the organizer can always find it again.
+  useEffect(() => {
+    rememberBill({ token: manageToken, title });
+  }, [manageToken, title]);
 
   const collected = round2(
     participants.filter((p) => p.status === "confirmed").reduce((s, p) => s + p.amount, 0),
@@ -85,6 +96,28 @@ export function Dashboard({
         <p className="text-foreground-body">{title}</p>
       </div>
 
+      {showNew && (
+        <div className="flex items-start gap-3 rounded-[var(--radius-md)] border border-border border-l-4 border-l-secondary bg-surface px-4 py-3 shadow-[var(--shadow-xs)]">
+          <span className="text-lg">🎉</span>
+          <div className="flex-1 text-sm">
+            <p className="font-semibold text-foreground">Bill&rsquo;s live! Save your private link.</p>
+            <p className="text-foreground-body">
+              This dashboard is the only place you confirm payments — and there&rsquo;s
+              no login to get back in. Copy or bookmark the private link below before
+              you share.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowNew(false)}
+            aria-label="Dismiss"
+            className="text-foreground-muted hover:text-foreground"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* Share */}
       <section className={card + " p-5"}>
         <h2 className="font-display text-lg font-bold">Send it to the group</h2>
@@ -105,9 +138,27 @@ export function Dashboard({
           </a>
         </div>
         <p className="mt-2 text-xs text-foreground-muted">
-          🔖 Bookmark this page — it&rsquo;s your private dashboard. Don&rsquo;t share
-          this URL; share the link above.
+          This is the public pay link — safe to share in the group.
         </p>
+      </section>
+
+      {/* Private dashboard link */}
+      <section className={card + " border-l-4 border-l-teh-400 p-5"}>
+        <h2 className="font-display text-lg font-bold">Your private dashboard link 🔑</h2>
+        <p className="mt-1 text-sm text-foreground-body">
+          Only you should have this — it&rsquo;s how you confirm payments, and the only
+          way back in. Bills you open are also saved on this device.
+        </p>
+        <div className="mt-3 flex items-center gap-2 rounded-[var(--radius-sm)] border border-border bg-surface-sunken px-3 py-2.5">
+          <span className="truncate font-mono-amount text-sm text-foreground-body">
+            {manageUrl}
+          </span>
+        </div>
+        <CopyButton
+          value={manageUrl}
+          label="Copy private link"
+          className={btn.ghost + " mt-3 w-full !py-2.5 text-sm"}
+        />
       </section>
 
       {/* Progress hero */}

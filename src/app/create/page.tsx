@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { MyBills } from "@/components/MyBills";
 import { CreateBillForm } from "./CreateBillForm";
 
 export const metadata: Metadata = {
@@ -28,6 +29,7 @@ export default function CreatePage() {
           group.
         </p>
         <CreateBillForm />
+        <MyBills className="mt-10" />
       </main>
     </div>
   );

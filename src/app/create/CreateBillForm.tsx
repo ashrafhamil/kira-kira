@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createBillAction } from "@/app/actions";
 import { btn, card, input } from "@/components/ui";
 import { formatMoney, round2 } from "@/lib/format";
+import { rememberBill } from "@/lib/mybills";
 import type { SplitType } from "@/lib/types";
 
 interface Person {
@@ -85,7 +86,8 @@ export function CreateBillForm() {
         })),
       });
       if (res.ok) {
-        router.push(`/manage/${res.manageToken}`);
+        rememberBill({ token: res.manageToken, title: title.trim() });
+        router.push(`/manage/${res.manageToken}?new=1`);
       } else {
         setError(res.error);
       }
