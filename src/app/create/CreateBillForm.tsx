@@ -19,7 +19,6 @@ const TITLE_PRESETS = [
   "Trip Genting 🚠",
   "Office Lunch 🍱",
   "Birthday Gift 🎁",
-  "House Bills 🏠",
 ];
 
 export function CreateBillForm() {
