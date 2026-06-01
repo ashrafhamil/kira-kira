@@ -98,7 +98,7 @@ export function Dashboard({
 
       <Toast
         show={!!isNew}
-        message="Bill's live! Save your private link below — it's the only way back in."
+        message="Bill's live! Save your private link below to manage it later."
       />
 
       {/* Share */}
@@ -133,8 +133,8 @@ export function Dashboard({
       <section className={card + " border-l-4 border-l-teh-400 p-5"}>
         <h2 className="font-display text-lg font-bold">Your private dashboard link 🔑</h2>
         <p className="mt-1 text-sm text-foreground-body">
-          Only you should have this — it&rsquo;s how you confirm payments, and the only
-          way back in. Bills you open are also saved on this device.
+          Only you should have this — it&rsquo;s how you confirm payments. Bills you
+          open are also saved on this device.
         </p>
         <div className="mt-3 flex items-center gap-2 rounded-[var(--radius-sm)] border border-border bg-surface-sunken px-3 py-2.5">
           <span className="truncate font-mono-amount text-sm text-foreground-body">
