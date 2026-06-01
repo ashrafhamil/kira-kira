@@ -12,5 +12,10 @@ export const btn = {
 export const card =
   "rounded-[var(--radius-lg)] border border-border bg-surface shadow-[var(--shadow-sm)]";
 
-export const input =
-  "w-full rounded-[var(--radius-sm)] border border-border bg-surface-sunken px-3.5 py-2.5 text-foreground placeholder:text-foreground-muted focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/30";
+const inputBase =
+  "rounded-[var(--radius-sm)] border border-border bg-surface-sunken px-3.5 py-2.5 text-foreground placeholder:text-foreground-muted focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/30";
+
+// Full-width by default; use `inputBare` when the width is controlled by the parent
+// (flex-1 / w-24 etc.) so it doesn't fight a baked-in w-full.
+export const input = `w-full ${inputBase}`;
+export const inputBare = inputBase;

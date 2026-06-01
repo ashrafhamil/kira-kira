@@ -4,7 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Soup } from "lucide-react";
 import { createBillAction } from "@/app/actions";
-import { btn, card, input } from "@/components/ui";
+import { btn, card, input, inputBare } from "@/components/ui";
 import { formatMoney, round2 } from "@/lib/format";
 import { rememberBill } from "@/lib/mybills";
 import { MAKAN_PRESETS } from "@/lib/makan";
@@ -430,13 +430,13 @@ export function CreateBillForm() {
                 >
                   <div className="flex items-center gap-2">
                     <input
-                      className={input + " flex-1"}
+                      className={inputBare + " min-w-0 flex-1"}
                       placeholder="Item (e.g. Roti Canai)"
                       value={it.name}
                       onChange={(e) => updateItem(i, { name: e.target.value })}
                     />
                     <input
-                      className={input + " w-24"}
+                      className={inputBare + " w-24 shrink-0"}
                       placeholder="RM"
                       inputMode="decimal"
                       value={it.price}
