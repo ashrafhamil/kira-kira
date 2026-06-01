@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { Soup } from "lucide-react";
 import { createBillAction } from "@/app/actions";
 import { btn, card, input } from "@/components/ui";
 import { formatMoney, round2 } from "@/lib/format";
@@ -390,8 +391,9 @@ export function CreateBillForm() {
       {splitType === "by_item" && (
         <section className={card + " p-5"}>
           <div className="flex items-center justify-between">
-            <h2 className="font-display text-lg font-bold">
-              What did everyone makan? 🍜
+            <h2 className="flex items-center gap-2 font-display text-lg font-bold">
+              <Soup className="size-4 text-sambal-600" aria-hidden />
+              What did everyone makan?
             </h2>
             <span className="text-sm text-foreground-muted">
               Total {formatMoney(byItemTotal)}

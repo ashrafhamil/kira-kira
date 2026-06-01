@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ReceiptText } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Stamp } from "@/components/Stamp";
@@ -114,7 +115,10 @@ export default async function BillPage({
         {/* Item breakdown (by-item split) */}
         {bill.items.length > 0 && (
           <section className={card + " p-5"}>
-            <h2 className="font-display text-lg font-bold">The damage 🧾</h2>
+            <h2 className="flex items-center gap-2 font-display text-lg font-bold">
+              <ReceiptText className="size-4 text-kopi-500" aria-hidden />
+              The damage
+            </h2>
             <ul className="mt-3 space-y-2.5">
               {bill.items.map((it) => {
                 const names = it.shared_by
@@ -147,7 +151,7 @@ export default async function BillPage({
           <div>
             <p className="font-display text-lg font-bold">
               {progress.percent === 100
-                ? "Semua dah settle! 🎉"
+                ? "Semua dah settle!"
                 : `${formatMoney(progress.remaining)} to go`}
             </p>
             <p className="text-sm text-foreground-body">

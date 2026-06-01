@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Coffee } from "lucide-react";
 
 export function Logo({ className = "" }: { className?: string }) {
   return (
@@ -8,9 +9,9 @@ export function Logo({ className = "" }: { className?: string }) {
     >
       <span
         aria-hidden
-        className="grid size-8 place-items-center rounded-full bg-kopi-700 text-base shadow-sm"
+        className="grid size-8 place-items-center rounded-full bg-kopi-700 shadow-sm"
       >
-        ☕
+        <Coffee className="size-4 text-krim-50" />
       </span>
       <span>
         Kira-<span className="text-sambal-600">Kira</span>

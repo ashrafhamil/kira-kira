@@ -3,6 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { confirmPaymentAction } from "@/app/actions";
+import { Check, KeyRound } from "lucide-react";
 import { rememberBill } from "@/lib/mybills";
 import { TehGlass } from "@/components/TehGlass";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -131,7 +132,10 @@ export function Dashboard({
 
       {/* Private dashboard link */}
       <section className={card + " border-l-4 border-l-teh-400 p-5"}>
-        <h2 className="font-display text-lg font-bold">Your private dashboard link 🔑</h2>
+        <h2 className="flex items-center gap-2 font-display text-lg font-bold">
+          <KeyRound className="size-4 text-teh-400" aria-hidden />
+          Your private dashboard link
+        </h2>
         <p className="mt-1 text-sm text-foreground-body">
           Only you should have this — it&rsquo;s how you confirm payments. Bills you
           open are also saved on this device.
@@ -154,7 +158,7 @@ export function Dashboard({
         <TehGlass percent={percent} className="h-28 w-24 shrink-0" />
         <div className="min-w-0">
           <p className="font-display text-xl font-bold">
-            {percent === 100 ? "Semua dah settle! 🎉" : formatMoney(collected)}
+            {percent === 100 ? "Semua dah settle!" : formatMoney(collected)}
           </p>
           {percent !== 100 && (
             <p className="text-sm text-foreground-body">
@@ -222,7 +226,13 @@ export function Dashboard({
                     onClick={() => toggle(p.id, true)}
                     className={btn.primary + " flex-1 !py-2 text-sm"}
                   >
-                    {p.status === "claimed" ? "Confirm — Dah bayar ✅" : "Mark as paid"}
+                    {p.status === "claimed" ? (
+                      <>
+                        <Check className="size-4" aria-hidden /> Confirm — Dah bayar
+                      </>
+                    ) : (
+                      "Mark as paid"
+                    )}
                   </button>
                 </div>
               </li>

@@ -2,6 +2,7 @@
 
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { Check, Clock } from "lucide-react";
 import { claimPaymentAction, uploadProofAction } from "@/app/actions";
 import { QrCard } from "@/components/QrCard";
 import { Stamp } from "@/components/Stamp";
@@ -74,7 +75,7 @@ export function PayPanel({
       <section className={card + " flex flex-col items-center py-8 text-center"}>
         <Confetti fire />
         <Stamp label="DAH BAYAR" className="mb-4" />
-        <h2 className="font-display text-2xl font-bold">Settled lah! 🎉</h2>
+        <h2 className="font-display text-2xl font-bold">Settled lah!</h2>
         <p className="mt-1 max-w-xs text-foreground-body">
           Terima kasih, {justPaid}. The organizer will confirm shortly — no more
           chasing.
@@ -109,7 +110,7 @@ export function PayPanel({
               type="button"
               disabled={settled}
               onClick={() => setSelectedId(isSel ? null : p.id)}
-              className={`rounded-full border px-3.5 py-2 text-sm font-semibold transition ${
+              className={`inline-flex items-center gap-1 rounded-full border px-3.5 py-2 text-sm font-semibold transition ${
                 settled
                   ? "border-paid/30 bg-paid-bg text-paid-foreground"
                   : checking
@@ -120,7 +121,8 @@ export function PayPanel({
               }`}
             >
               {p.name}
-              {settled ? " ✅" : checking ? " ⏳" : ""}
+              {settled && <Check className="size-3.5" aria-hidden />}
+              {checking && <Clock className="size-3.5" aria-hidden />}
             </button>
           );
         })}
@@ -128,7 +130,7 @@ export function PayPanel({
 
       {selected && selected.status === "confirmed" && (
         <p className="mt-5 rounded-[var(--radius-sm)] bg-paid-bg px-4 py-3 text-sm font-medium text-paid-foreground">
-          You&rsquo;re all settled. Nothing to pay 🎉
+          You&rsquo;re all settled. Nothing to pay.
         </p>
       )}
 
@@ -176,7 +178,13 @@ export function PayPanel({
             disabled={pending}
             className={btn.accent + " w-full !py-3.5 text-base"}
           >
-            {pending ? "Sending…" : "Dah bayar ✅"}
+            {pending ? (
+              "Sending…"
+            ) : (
+              <>
+                <Check className="size-4" aria-hidden /> Dah bayar
+              </>
+            )}
           </button>
         </div>
       )}

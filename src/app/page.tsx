@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MessageCircle, QrCode, ReceiptText, Link2, Soup } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { TehGlass } from "@/components/TehGlass";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -23,8 +24,8 @@ export default function Home() {
       {/* Hero */}
       <section className="grid items-center gap-10 py-8 md:grid-cols-2 md:py-14">
         <Reveal mount>
-          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-xs font-semibold text-foreground-muted">
-            🍜 Made for the makan group
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-xs font-semibold text-foreground-muted">
+            <Soup className="size-3.5 text-sambal-600" /> Made for the makan group
           </span>
           <h1 className="mt-4 text-4xl leading-[1.05] font-bold sm:text-5xl">
             Split the bill.
@@ -129,7 +130,7 @@ export default function Home() {
               lift
               className={card + " p-5 transition-shadow hover:shadow-[var(--shadow-md)]"}
             >
-              <div className="grid size-9 place-items-center rounded-full bg-kopi-700 font-display font-bold text-primary-foreground">
+              <div className="grid size-9 place-items-center rounded-full bg-kopi-700 font-display font-bold text-krim-50">
                 {s.n}
               </div>
               <h3 className="mt-3 text-lg font-bold">{s.t}</h3>
@@ -145,22 +146,22 @@ export default function Home() {
           {
             t: "Stop the chasing",
             d: "One tap drafts a warm WhatsApp reminder for anyone unpaid. The app chases — you stay the good guy.",
-            e: "💬",
+            Icon: MessageCircle,
           },
           {
             t: "DuitNow QR built in",
             d: "Every share comes with a scan-to-pay QR. Simulated for the demo, swap-ready for real.",
-            e: "📲",
+            Icon: QrCode,
           },
           {
             t: "A receipt you'd screenshot",
             d: "Kopitiam thermal-receipt styling with a LUNAS chop when someone settles.",
-            e: "🧾",
+            Icon: ReceiptText,
           },
           {
             t: "WhatsApp-ready links",
             d: "Mobile-first, with a custom preview card so the link looks premium in the group chat.",
-            e: "🔗",
+            Icon: Link2,
           },
         ].map((f, i) => (
           <Reveal
@@ -169,8 +170,10 @@ export default function Home() {
             lift
             className={card + " p-5 transition-shadow hover:shadow-[var(--shadow-md)]"}
           >
-            <div className="text-2xl">{f.e}</div>
-            <h3 className="mt-2 text-lg font-bold">{f.t}</h3>
+            <span className="inline-grid size-10 place-items-center rounded-full bg-sambal-500/10">
+              <f.Icon className="size-5 text-sambal-600" />
+            </span>
+            <h3 className="mt-3 text-lg font-bold">{f.t}</h3>
             <p className="mt-1 text-sm text-foreground-body">{f.d}</p>
           </Reveal>
         ))}

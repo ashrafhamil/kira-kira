@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { PartyPopper } from "lucide-react";
 
 export function Toast({
   message,
@@ -25,7 +26,7 @@ export function Toast({
   return (
     <div className="fixed inset-x-0 top-4 z-50 flex justify-center px-4">
       <div className="animate-toast flex max-w-md items-center gap-3 rounded-[var(--radius-md)] border border-border border-l-4 border-l-secondary bg-surface px-4 py-3 shadow-[var(--shadow-lg)]">
-        <span className="text-lg">🎉</span>
+        <PartyPopper className="size-5 shrink-0 text-teh-400" aria-hidden />
         <p className="flex-1 text-sm font-medium text-foreground">{message}</p>
         <button
           type="button"

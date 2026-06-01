@@ -2,7 +2,7 @@ import type { ParticipantStatus } from "./types";
 import { formatMoney } from "./format";
 
 export const STATUS_LABEL: Record<ParticipantStatus, string> = {
-  confirmed: "Settled ✅",
+  confirmed: "Settled",
   claimed: "Checking…",
   unpaid: "Belum bayar",
 };
