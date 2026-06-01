@@ -101,8 +101,7 @@
   --kira-font-mono:    "Space Grotesk", ui-monospace, "SF Mono", Menlo, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
+:root.dark {
     --background:        #17110C;
     --surface:           #22190F;
     --surface-raised:    #2B2013;
@@ -145,7 +144,6 @@
     --kira-shadow-md:  0 8px 20px rgb(0 0 0 / 0.44);
     --kira-shadow-lg:  0 16px 40px rgb(0 0 0 / 0.55);
     --kira-shadow-glow-accent: 0 6px 26px rgb(210 70 44 / 0.40);
-  }
 }
 
 @theme inline {

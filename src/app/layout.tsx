@@ -36,6 +36,14 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className="h-full antialiased">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{if(localStorage.getItem('kira-theme')==='dark')document.documentElement.classList.add('dark');}catch(e){}})();",
+          }}
+        />
+      </head>
       <body className="kopi-grain min-h-full">{children}</body>
     </html>
   );

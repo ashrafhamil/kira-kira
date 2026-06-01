@@ -2,6 +2,7 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { Logo } from "@/components/Logo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { getBillByManageToken } from "@/lib/db";
 import { Dashboard } from "./Dashboard";
 
@@ -25,9 +26,12 @@ export default async function ManagePage({
     <div className="mx-auto flex min-h-full w-full max-w-lg flex-col px-5">
       <header className="flex items-center justify-between py-5">
         <Logo />
-        <Link href="/create" className="text-sm font-semibold text-foreground-muted">
-          New bill
-        </Link>
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+          <Link href="/create" className="text-sm font-semibold text-foreground-muted">
+            New bill
+          </Link>
+        </div>
       </header>
       <main className="pb-16">
         <Dashboard

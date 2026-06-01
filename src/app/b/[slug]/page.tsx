@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Logo } from "@/components/Logo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Stamp } from "@/components/Stamp";
 import { TehGlass } from "@/components/TehGlass";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -48,9 +49,12 @@ export default async function BillPage({
     <div className="mx-auto flex min-h-full w-full max-w-lg flex-col px-5">
       <header className="flex items-center justify-between py-5">
         <Logo />
-        <Link href="/create" className="text-sm font-semibold text-foreground-muted">
-          Start your own
-        </Link>
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+          <Link href="/create" className="text-sm font-semibold text-foreground-muted">
+            Start your own
+          </Link>
+        </div>
       </header>
 
       <main className="space-y-6 pb-16">

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { TehGlass } from "@/components/TehGlass";
 import { StatusBadge } from "@/components/StatusBadge";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { btn, card } from "@/components/ui";
 
 export default function Home() {
@@ -9,9 +10,12 @@ export default function Home() {
     <div className="mx-auto flex min-h-full w-full max-w-5xl flex-col px-5">
       <header className="flex items-center justify-between py-5">
         <Logo />
-        <Link href="/create" className={btn.accent + " !px-4 !py-2 text-sm"}>
-          Start a bill
-        </Link>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <Link href="/create" className={btn.accent + " !px-4 !py-2 text-sm"}>
+            Start a bill
+          </Link>
+        </div>
       </header>
 
       {/* Hero */}
@@ -50,7 +54,7 @@ export default function Home() {
 
         {/* Hero visual: mini receipt + glass */}
         <div className="relative">
-          <div className={card + " mx-auto max-w-sm overflow-hidden"}>
+          <div className={card + " relative z-10 mx-auto max-w-sm overflow-hidden"}>
             <div className="receipt-edge bg-surface-raised px-6 pt-6 pb-7">
               <p className="text-center font-display text-lg font-bold">
                 Mamak Supper 🍢
@@ -82,7 +86,7 @@ export default function Home() {
               ))}
             </div>
           </div>
-          <div className="absolute -bottom-5 -left-3 hidden w-24 rounded-2xl border border-border bg-surface p-2 shadow-[var(--shadow-md)] sm:block">
+          <div className="absolute -bottom-7 -left-7 -z-10 hidden w-24 rounded-2xl border border-border bg-surface p-2 shadow-[var(--shadow-md)] sm:block">
             <TehGlass percent={68} className="w-full" />
             <p className="mt-1 text-center text-[11px] font-semibold text-foreground-muted">
               RM 58 / 86
