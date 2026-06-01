@@ -4,6 +4,7 @@ import { TehGlass } from "@/components/TehGlass";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { MyBills } from "@/components/MyBills";
+import { Reveal } from "@/components/Reveal";
 import { btn, card } from "@/components/ui";
 
 export default function Home() {
@@ -21,7 +22,7 @@ export default function Home() {
 
       {/* Hero */}
       <section className="grid items-center gap-10 py-8 md:grid-cols-2 md:py-14">
-        <div>
+        <Reveal mount>
           <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-xs font-semibold text-foreground-muted">
             🍜 Made for the makan group
           </span>
@@ -51,10 +52,10 @@ export default function Home() {
           <p className="mt-3 text-sm text-foreground-muted">
             No sign-up. Takes 30 seconds.
           </p>
-        </div>
+        </Reveal>
 
         {/* Hero visual: mini receipt + glass */}
-        <div className="flex flex-col items-center gap-4">
+        <Reveal mount delay={0.15} className="flex flex-col items-center gap-4">
           <div className={card + " w-full max-w-sm overflow-hidden"}>
             <div className="receipt-edge bg-surface-raised px-6 pt-6 pb-7">
               <p className="text-center font-display text-lg font-bold">
@@ -94,20 +95,22 @@ export default function Home() {
               <p className="font-mono-amount text-foreground-muted">RM 58.00 / 86.00</p>
             </div>
           </div>
-        </div>
+        </Reveal>
       </section>
 
       <MyBills className="py-4" />
 
       {/* How it works */}
       <section id="how" className="py-12">
-        <h2 className="text-2xl font-bold">Three taps to settled</h2>
+        <Reveal>
+          <h2 className="text-2xl font-bold">Three taps to settled</h2>
+        </Reveal>
         <div className="mt-6 grid gap-4 sm:grid-cols-3">
           {[
             {
               n: "1",
               t: "Start a bill",
-              d: "Add the total, who's in, and how to split. Equal or custom.",
+              d: "Add the total, who's in, and how to split — equal, custom, or by item.",
             },
             {
               n: "2",
@@ -119,14 +122,19 @@ export default function Home() {
               t: "Track who's settled",
               d: "Watch the glass fill. Nudge whoever's belum bayar — politely.",
             },
-          ].map((s) => (
-            <div key={s.n} className={card + " p-5"}>
+          ].map((s, i) => (
+            <Reveal
+              key={s.n}
+              delay={i * 0.08}
+              lift
+              className={card + " p-5 transition-shadow hover:shadow-[var(--shadow-md)]"}
+            >
               <div className="grid size-9 place-items-center rounded-full bg-kopi-700 font-display font-bold text-primary-foreground">
                 {s.n}
               </div>
               <h3 className="mt-3 text-lg font-bold">{s.t}</h3>
               <p className="mt-1 text-sm text-foreground-body">{s.d}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
       </section>
@@ -154,12 +162,17 @@ export default function Home() {
             d: "Mobile-first, with a custom preview card so the link looks premium in the group chat.",
             e: "🔗",
           },
-        ].map((f) => (
-          <div key={f.t} className={card + " p-5"}>
+        ].map((f, i) => (
+          <Reveal
+            key={f.t}
+            delay={i * 0.06}
+            lift
+            className={card + " p-5 transition-shadow hover:shadow-[var(--shadow-md)]"}
+          >
             <div className="text-2xl">{f.e}</div>
             <h3 className="mt-2 text-lg font-bold">{f.t}</h3>
             <p className="mt-1 text-sm text-foreground-body">{f.d}</p>
-          </div>
+          </Reveal>
         ))}
       </section>
 
