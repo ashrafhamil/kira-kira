@@ -5,10 +5,12 @@ import { useState } from "react";
 export function CopyButton({
   value,
   label = "Copy link",
+  copiedLabel = "Copied ✅",
   className = "",
 }: {
   value: string;
   label?: string;
+  copiedLabel?: string;
   className?: string;
 }) {
   const [copied, setCopied] = useState(false);
@@ -27,7 +29,7 @@ export function CopyButton({
       className={className}
       aria-live="polite"
     >
-      {copied ? "Copied — paste in the group ✅" : label}
+      {copied ? copiedLabel : label}
     </button>
   );
 }

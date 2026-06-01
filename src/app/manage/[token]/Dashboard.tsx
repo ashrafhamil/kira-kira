@@ -127,7 +127,11 @@ export function Dashboard({
           </span>
         </div>
         <div className="mt-3 flex flex-wrap gap-2">
-          <CopyButton value={shareUrl} className={btn.primary + " flex-1 !py-2.5 text-sm"} />
+          <CopyButton
+            value={shareUrl}
+            copiedLabel="Copied — paste in the group ✅"
+            className={btn.primary + " flex-1 !py-2.5 text-sm"}
+          />
           <a
             href={`https://wa.me/?text=${encodeURIComponent(`Jom settle *${title}* — ${shareUrl}`)}`}
             target="_blank"
@@ -157,6 +161,7 @@ export function Dashboard({
         <CopyButton
           value={manageUrl}
           label="Copy private link"
+          copiedLabel="Copied — keep it safe 🔑"
           className={btn.ghost + " mt-3 w-full !py-2.5 text-sm"}
         />
       </section>
