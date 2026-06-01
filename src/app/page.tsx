@@ -4,6 +4,7 @@ import { Logo } from "@/components/Logo";
 import { TehGlass } from "@/components/TehGlass";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { InstallButton } from "@/components/InstallButton";
 import { MyBills } from "@/components/MyBills";
 import { Reveal } from "@/components/Reveal";
 import { btn, card } from "@/components/ui";
@@ -14,6 +15,7 @@ export default function Home() {
       <header className="flex items-center justify-between py-5">
         <Logo />
         <div className="flex items-center gap-2">
+          <InstallButton className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-2 text-sm font-semibold text-foreground hover:bg-surface-sunken" />
           <ThemeToggle />
           <Link href="/create" className={btn.accent + " !px-4 !py-2 text-sm"}>
             Start a bill
