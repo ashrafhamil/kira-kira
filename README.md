@@ -30,11 +30,14 @@ Someone always fronts the bill — for the mamak supper, the Genting trip, the o
 |  | Feature | |
 |---|---|---|
 | 🧾 | **Kopitiam thermal-receipt bill** — every bill renders as a warm makan-shop receipt, with a **LUNAS chop stamp** inked over whoever's settled | *differentiator* |
+| 🍜 | **Split by item, makan-style** — a third split mode with a **makan quick-add dictionary** (roti canai, teh tarik, nasi goreng…). Assign items to people ("the satay's Ali's"), and Kira-Kira computes everyone's fair share and shows the breakdown on the bill | *differentiator* |
 | 💬 | **Stop the chasing** — one tap drafts a warm, Manglish WhatsApp reminder (`wa.me` deep link) for anyone *belum bayar* | *killer* |
 | 📲 | **DuitNow-style QR** — every share comes with a scan-to-pay QR card (simulated for the demo, swap-ready for real) | *killer* |
 | 🫖 | **Teh-tarik progress glass** — collection progress fills a glass of teh; it turns green and pops confetti at 100% | *differentiator* |
+| 🌐 | **Manglish ↔ English toggle** — the public bill page speaks Manglish by default, with a one-tap switch to plain English for the whole group | *local* |
 | 🔗 | **WhatsApp-native sharing** — mobile-first, with a custom per-bill **OG preview card** so the link looks premium in the group chat | *polish* |
 | 📊 | **Organizer dashboard** — total collected, remaining, who's settled / checking / *belum bayar*, confirm & undo | *core* |
+| 📱 | **Installable PWA** — add to home screen, runs standalone, branded splash, dark mode | *polish* |
 
 ---
 
@@ -52,7 +55,7 @@ Someone always fronts the bill — for the mamak supper, the Genting trip, the o
 |---|---|---|
 | RE-01 | Organizer can create a bill | `/create` → `CreateBillForm` |
 | RE-02 | Bill has title, amount, participants, description | create form fields |
-| RE-03 | Equal **or** custom split | split toggle; `splitAmounts()` in `src/lib/db.ts` |
+| RE-03 | Equal **or** custom split (+ **by-item**) | split toggle; `splitAmounts()` / `byItemAmounts()` in `src/lib/db.ts` |
 | RE-04 | Generates a shareable bill/payment link | `/b/[slug]` (unguessable slug) |
 | RE-05 | Members view the bill & confirm payment | `/b/[slug]` → `PayPanel` ("Dah bayar ✅") |
 | RE-06 | Organizer tracks paid / unpaid | `/manage/[token]` → `Dashboard` |
@@ -61,7 +64,7 @@ Someone always fronts the bill — for the mamak supper, the Genting trip, the o
 | RE-09 | Simulated/manual payment accepted | DuitNow QR card + optional screenshot proof |
 | RE-10 | Shareable, premium link preview | dynamic OG image at `/b/[slug]/opengraph-image` |
 
-**Beyond the brief:** WhatsApp auto-reminder templates, LUNAS chop stamp, teh-tarik progress, confetti, payment-screenshot proof upload, bilingual EN/Manglish copy, dark mode.
+**Beyond the brief:** by-item split with a makan-item dictionary, WhatsApp auto-reminder templates, LUNAS chop stamp, teh-tarik progress, confetti, payment-screenshot proof upload, one-tap Manglish↔English toggle, installable PWA, light/dark themes, device-local bill recovery.
 
 ---
 
@@ -94,9 +97,13 @@ src/
     b/[slug]/                public bill receipt + pay + OG image
     manage/[token]/          organizer dashboard
     actions.ts               server actions (create, claim, confirm, upload)
-  lib/                       db (service role), types, money/format, copy deck
-  components/                TehGlass, Stamp, QrCard, StatusBadge, Confetti, …
+  lib/                       db (service role), types, money/format, copy deck,
+                             i18n (Manglish/English), makan dictionary
+  components/                TehGlass, Stamp, QrCard, StatusBadge, Confetti,
+                             LangToggle, ThemeToggle, InstallButton, …
 ```
+
+Schema (`supabase/migrations/`): `bills`, `participants`, `bill_items` (by-item split), plus a public `proofs` storage bucket. RLS on, no public policies.
 
 ---
 
