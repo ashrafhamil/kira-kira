@@ -23,6 +23,14 @@ interface Item {
   sharedBy: number[]; // people indexes
 }
 
+export interface Prefill {
+  title?: string;
+  splitType?: SplitType;
+  totalAmount?: string;
+  people?: { name?: string }[];
+  items?: { name?: string; price?: string; sharedBy?: number[] }[];
+}
+
 const TITLE_PRESETS = [
   "Mamak Supper 🍢",
   "Trip Genting 🚠",
@@ -36,23 +44,45 @@ const SPLIT_LABELS: Record<SplitType, string> = {
   by_item: "By item",
 };
 
-export function CreateBillForm({ lang }: { lang: Lang }) {
+function buildInitialPeople(prefill?: Prefill): Person[] {
+  const named = (prefill?.people ?? [])
+    .map((p) => ({ name: (p?.name ?? "").trim(), phone: "", amount: "" }))
+    .filter((p) => p.name);
+  while (named.length < 2) named.push({ name: "", phone: "", amount: "" });
+  return named;
+}
+
+function buildInitialItems(prefill?: Prefill): Item[] {
+  if (prefill?.splitType !== "by_item") return [];
+  return (prefill.items ?? []).map((it) => ({
+    name: (it?.name ?? "").trim() || "Item",
+    price: String(it?.price ?? ""),
+    sharedBy: Array.isArray(it?.sharedBy) ? it.sharedBy : [],
+  }));
+}
+
+export function CreateBillForm({
+  lang,
+  prefill,
+}: {
+  lang: Lang;
+  prefill?: Prefill;
+}) {
   const t = billStrings[lang];
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState(prefill?.title ?? "");
   const [organizerName, setOrganizerName] = useState("");
   const [paymentHandle, setPaymentHandle] = useState("");
   const [description, setDescription] = useState("");
-  const [splitType, setSplitType] = useState<SplitType>("equal");
-  const [totalAmount, setTotalAmount] = useState("");
-  const [people, setPeople] = useState<Person[]>([
-    { name: "", phone: "", amount: "" },
-    { name: "", phone: "", amount: "" },
-  ]);
-  const [items, setItems] = useState<Item[]>([]);
+  const [splitType, setSplitType] = useState<SplitType>(
+    prefill?.splitType ?? "equal",
+  );
+  const [totalAmount, setTotalAmount] = useState(prefill?.totalAmount ?? "");
+  const [people, setPeople] = useState<Person[]>(() => buildInitialPeople(prefill));
+  const [items, setItems] = useState<Item[]>(() => buildInitialItems(prefill));
 
   const customTotal = useMemo(
     () => round2(people.reduce((s, p) => s + (parseFloat(p.amount) || 0), 0)),

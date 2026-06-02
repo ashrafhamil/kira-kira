@@ -8,6 +8,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { LangToggle } from "@/components/LangToggle";
 import { InstallButton } from "@/components/InstallButton";
 import { MyBills } from "@/components/MyBills";
+import { LiveSplitDemo } from "@/components/LiveSplitDemo";
 import { Reveal } from "@/components/Reveal";
 import { btn, card } from "@/components/ui";
 import { billStrings, normalizeLang } from "@/lib/i18n";
@@ -106,6 +107,11 @@ export default async function Home() {
       </section>
 
       <MyBills className="py-4" />
+
+      {/* Interactive live splitter */}
+      <Reveal>
+        <LiveSplitDemo lang={lang} />
+      </Reveal>
 
       {/* How it works */}
       <section id="how" className="py-12">
