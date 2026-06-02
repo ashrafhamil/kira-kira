@@ -29,6 +29,7 @@ Someone always fronts the bill — for the mamak supper, the Genting trip, the o
 
 |  | Feature | |
 |---|---|---|
+| 📷 | **Snap-the-receipt scan** — photograph the bill and **Claude vision** autofills every item, price, service charge and SST; you just tap who shares each dish. The image is never stored | *killer · AI* |
 | 🧾 | **Kopitiam thermal-receipt bill** — every bill renders as a warm makan-shop receipt, with a **LUNAS chop stamp** inked over whoever's settled | *differentiator* |
 | 🍜 | **Split by item, makan-style** — a third split mode with a **makan quick-add dictionary** (roti canai, teh tarik, nasi goreng…). Assign items to people ("the satay's Ali's"), and Kira-Kira computes everyone's fair share and shows the breakdown on the bill | *differentiator* |
 | 💬 | **Stop the chasing** — one tap drafts a warm, Manglish WhatsApp reminder (`wa.me` deep link) for anyone *belum bayar* | *killer* |
@@ -64,7 +65,7 @@ Someone always fronts the bill — for the mamak supper, the Genting trip, the o
 | RE-09 | Simulated/manual payment accepted | DuitNow QR card + optional screenshot proof |
 | RE-10 | Shareable, premium link preview | dynamic OG image at `/b/[slug]/opengraph-image` |
 
-**Beyond the brief:** by-item split with a makan-item dictionary, WhatsApp auto-reminder templates, LUNAS chop stamp, teh-tarik progress, confetti, payment-screenshot proof upload, one-tap Manglish↔English toggle, installable PWA, light/dark themes, device-local bill recovery.
+**Beyond the brief:** AI receipt scanning (Claude vision → by-item split), interactive live-split demo on the landing page, by-item split with a makan-item dictionary, WhatsApp auto-reminder templates, LUNAS chop stamp, teh-tarik progress, confetti, payment-screenshot proof upload, one-tap Manglish↔English toggle, installable PWA, light/dark themes, device-local bill recovery.
 
 ---
 
@@ -78,6 +79,7 @@ Honesty over smoke-and-mirrors — what's real vs simulated:
 | Payment confirmation & organizer review | ✅ Fully real |
 | WhatsApp reminders | ✅ Real `wa.me` deep links with prefilled text |
 | Payment-proof screenshot upload | ✅ Real (Supabase Storage) |
+| Receipt scanning | ✅ Real — Claude (Haiku 4.5) vision parses the photo into structured line items; the image is never persisted |
 | **DuitNow QR / money movement** | ⚠️ **Simulated** — the QR encodes a demo payload; no funds actually move. Built to swap in a real DuitNow merchant payload. |
 
 ---
@@ -85,7 +87,7 @@ Honesty over smoke-and-mirrors — what's real vs simulated:
 ## 🛠️ Tech & architecture
 
 - **Next.js 16** (App Router, Server Actions) · **TypeScript** · **Tailwind CSS v4** · CSS/SVG motion
-- **Supabase** (Postgres + Storage) · deployed on **Vercel**
+- **Supabase** (Postgres + Storage) · **Claude** (Haiku 4.5 vision, receipt scan) · deployed on **Vercel**
 - **No end-user accounts.** The organizer gets a secret `manage_token` link for the dashboard; the public link is view-and-pay only. This keeps friction at zero (the brief's "simple enough for real people").
 - **Security model:** all DB access runs through Server Actions using the Supabase **service-role key (server-only)**. Row-Level Security is enabled with **no public policies**, so the anon key can't read or write anything directly. Organizer mutations are gated on the `manage_token`.
 
@@ -114,6 +116,8 @@ npm install
 cp .env.example .env.local   # add your Supabase URL + keys
 npm run dev
 ```
+
+Receipt scanning is optional — set `ANTHROPIC_API_KEY` in `.env.local` to enable it (the rest of the app runs without it).
 
 Apply the schema (`supabase/migrations/`) to your Supabase project, then seed a demo bill:
 

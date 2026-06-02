@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
-import { MessageCircle, QrCode, ReceiptText, Link2, Soup } from "lucide-react";
+import { MessageCircle, QrCode, ReceiptText, Link2, Soup, ScanLine, Sparkles } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { TehGlass } from "@/components/TehGlass";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -123,7 +123,7 @@ export default async function Home() {
             {
               n: "1",
               t: "Start a bill",
-              d: "Add the total, who's in, and how to split — equal, custom, or by item.",
+              d: "Snap the receipt to autofill the items — or add the total yourself. Split equal, custom, or by item.",
             },
             {
               n: "2",
@@ -151,6 +151,37 @@ export default async function Home() {
           ))}
         </div>
       </section>
+
+      {/* Flagship: receipt scanner */}
+      <Reveal
+        lift
+        className={
+          card +
+          " mt-2 overflow-hidden border-accent/30 bg-gradient-to-br from-accent/5 to-transparent p-6 transition-shadow hover:shadow-[var(--shadow-md)] sm:p-8"
+        }
+      >
+        <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-6">
+          <span className="inline-grid size-14 shrink-0 place-items-center rounded-2xl bg-accent/10">
+            <ScanLine className="size-7 text-accent" />
+          </span>
+          <div className="flex-1">
+            <span className="inline-flex items-center gap-1 rounded-full bg-accent/10 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide text-accent">
+              <Sparkles className="size-3" /> New
+            </span>
+            <h3 className="mt-2 text-xl font-bold">
+              Snap the receipt — we read it for you
+            </h3>
+            <p className="mt-1 max-w-xl text-foreground-body">
+              Photograph the bill and Kira-Kira pulls out every item, price,
+              service charge and SST automatically — then you just tap who shares
+              each dish.
+            </p>
+          </div>
+          <Link href="/create" className={btn.accent + " shrink-0"}>
+            Try it
+          </Link>
+        </div>
+      </Reveal>
 
       {/* Features */}
       <section className="grid gap-4 py-6 sm:grid-cols-2">
