@@ -4,6 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Soup } from "lucide-react";
 import { createBillAction } from "@/app/actions";
+import { ScanReceipt, type ScanResult } from "@/components/ScanReceipt";
 import { btn, card, input, inputBare } from "@/components/ui";
 import { formatMoney, round2 } from "@/lib/format";
 import { rememberBill } from "@/lib/mybills";
@@ -150,6 +151,25 @@ export function CreateBillForm({
   function removeItem(i: number) {
     setItems((prev) => prev.filter((_, idx) => idx !== i));
   }
+  function applyScan(r: ScanResult) {
+    setSplitType("by_item");
+    setError(null);
+    const everyone = people.map((_, i) => i);
+    const scanned: Item[] = r.items.map((it) => ({
+      name: it.name,
+      price: String(it.price),
+      sharedBy: [], // user assigns who shares each ordered item
+    }));
+    const charges: Item[] = [];
+    // Service charge + SST land as rows everyone splits equally.
+    if (r.serviceCharge)
+      charges.push({ name: "Service charge", price: String(r.serviceCharge), sharedBy: [...everyone] });
+    if (r.sst) charges.push({ name: "SST", price: String(r.sst), sharedBy: [...everyone] });
+    if (r.rounding)
+      charges.push({ name: "Rounding", price: String(r.rounding), sharedBy: [...everyone] });
+    setItems([...scanned, ...charges]);
+  }
+
   function toggleItemPerson(itemIdx: number, personIdx: number) {
     setItems((prev) =>
       prev.map((it, idx) => {
@@ -233,6 +253,19 @@ export function CreateBillForm({
 
   return (
     <div className="mt-6 space-y-5">
+      {/* Scan a receipt */}
+      <section className={card + " p-5"}>
+        <h2 className="flex items-center gap-2 font-display text-lg font-bold">
+          <Soup className="size-4 text-sambal-600" aria-hidden />
+          Scan a receipt
+        </h2>
+        <p className="mt-1 text-sm text-foreground-body">
+          Snap the bill and we&rsquo;ll read the items for you — switches to a
+          by-item split automatically.
+        </p>
+        <ScanReceipt className="mt-4" onScanned={applyScan} />
+      </section>
+
       {/* Basics */}
       <section className={card + " p-5"}>
         <h2 className="font-display text-lg font-bold">What&rsquo;s the damage?</h2>

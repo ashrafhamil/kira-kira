@@ -9,6 +9,7 @@ import {
   getBillByManageToken,
   setConfirmation,
 } from "@/lib/db";
+import { scanReceipt } from "@/lib/scan";
 import type { CreateBillInput } from "@/lib/types";
 
 const MAX_PARTICIPANTS = 100;
@@ -118,4 +119,39 @@ export async function uploadProofAction(formData: FormData) {
 
 export async function refetchManaged(manageToken: string) {
   return getBillByManageToken(manageToken);
+}
+
+const SCAN_MEDIA_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
+type ScanMediaType = (typeof SCAN_MEDIA_TYPES)[number];
+// Client downscales to ~300KB; base64 inflates ~4/3, so cap the encoded string.
+const SCAN_MAX_BASE64 = 2_800_000; // ~2MB decoded
+
+/** Read a receipt photo into structured line items via Claude vision.
+ *  Stateless — the image is never persisted. */
+export async function scanReceiptAction(input: {
+  base64: string;
+  mediaType: string;
+}) {
+  const base64 = typeof input?.base64 === "string" ? input.base64 : "";
+  const mediaType = input?.mediaType as ScanMediaType;
+  if (!base64) return { ok: false as const, error: "No image." };
+  if (!SCAN_MEDIA_TYPES.includes(mediaType))
+    return { ok: false as const, error: "Only JPG, PNG or WEBP." };
+  if (base64.length > SCAN_MAX_BASE64)
+    return { ok: false as const, error: "Image too big — try a closer, smaller photo." };
+  if (!process.env.ANTHROPIC_API_KEY)
+    return { ok: false as const, error: "Receipt scanning isn't configured." };
+
+  try {
+    const result = await scanReceipt(base64, mediaType);
+    if (!result.items.length)
+      return {
+        ok: false as const,
+        error: "Couldn't read any items — try a clearer photo or add them manually.",
+      };
+    return { ok: true as const, ...result };
+  } catch (e) {
+    console.error("scanReceiptAction", e);
+    return { ok: false as const, error: "Scan failed — add the items manually." };
+  }
 }
