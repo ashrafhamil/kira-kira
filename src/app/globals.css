@@ -259,13 +259,49 @@ body {
   mask-composite: intersect;
 }
 
-/* LUNAS / PAID chop-stamp entrance */
+/* LUNAS / PAID chop-stamp — slam down, squash on impact, settle */
 @keyframes stamp-in {
-  0%   { opacity: 0; transform: rotate(-20deg) scale(2.4); }
-  55%  { opacity: 1; transform: rotate(-11deg) scale(0.9); }
-  100% { opacity: 0.95; transform: rotate(-12deg) scale(1); }
+  0%   { opacity: 0;    transform: rotate(-14deg) scale(2.2); }  /* inked, hovering */
+  55%  { opacity: 1;    transform: rotate(-9deg)  scale(2.0); }  /* fast descent */
+  70%  { opacity: 1;    transform: rotate(-8deg)  scale(0.84); } /* IMPACT — squash */
+  82%  { opacity: 0.95; transform: rotate(-8deg)  scale(1.06); } /* recoil */
+  100% { opacity: 0.95; transform: rotate(-8deg)  scale(1); }    /* settle */
 }
-.animate-stamp { animation: stamp-in 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
+/* ease-in curve: accelerate down, hit hard (no float-in) */
+.animate-stamp { animation: stamp-in 0.55s cubic-bezier(0.5, 0, 0.75, 0) both; }
+
+/* Ink press: a brief flush of colour the moment the chop contacts */
+@keyframes stamp-ink {
+  0%, 64% { opacity: 0; }
+  70%     { opacity: 0.4; }
+  100%    { opacity: 0; }
+}
+.chop { text-shadow: 0 0 1px var(--paid); }
+.chop::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: var(--paid);
+  mix-blend-mode: multiply;
+  opacity: 0;
+  pointer-events: none;
+  animation: stamp-ink 0.55s cubic-bezier(0.5, 0, 0.75, 0) both;
+}
+
+/* Thud: the receipt recoils at the instant of impact */
+@keyframes stamp-thud {
+  0%, 60% { transform: translateY(0); }
+  72%     { transform: translateY(3px); }
+  85%     { transform: translateY(-1px); }
+  100%    { transform: translateY(0); }
+}
+.animate-thud { animation: stamp-thud 0.55s ease-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-stamp, .animate-thud, .chop::after { animation: none; }
+  .animate-stamp { opacity: 0.95; }
+}
 
 /* Teh-tarik glass fill rise */
 @keyframes teh-rise {

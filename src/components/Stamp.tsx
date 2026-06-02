@@ -11,7 +11,7 @@ export function Stamp({
       aria-hidden
       className={`animate-stamp pointer-events-none select-none ${className}`}
     >
-      <div className="rounded-md border-[3px] border-paid px-2.5 py-0.5 font-display text-sm font-extrabold uppercase tracking-[0.2em] text-paid opacity-90 shadow-[inset_0_0_0_2px_var(--paid)]">
+      <div className="chop relative rounded-md border-[3px] border-paid px-2.5 py-0.5 font-display text-sm font-extrabold uppercase tracking-[0.2em] text-paid opacity-90 shadow-[inset_0_0_0_2px_var(--paid)]">
         {label}
       </div>
     </div>

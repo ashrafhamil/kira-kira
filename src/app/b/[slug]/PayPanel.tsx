@@ -76,7 +76,7 @@ export function PayPanel({
 
   if (justPaid) {
     return (
-      <section className={card + " flex flex-col items-center py-8 text-center"}>
+      <section className={card + " animate-thud flex flex-col items-center py-8 text-center"}>
         <Confetti fire />
         <Stamp label={t.celebrateStamp} className="mb-4" />
         <h2 className="font-display text-2xl font-bold">{t.celebrateTitle}</h2>
