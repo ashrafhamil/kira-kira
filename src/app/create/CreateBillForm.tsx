@@ -8,6 +8,7 @@ import { btn, card, input, inputBare } from "@/components/ui";
 import { formatMoney, round2 } from "@/lib/format";
 import { rememberBill } from "@/lib/mybills";
 import { MAKAN_PRESETS } from "@/lib/makan";
+import { billStrings, type Lang } from "@/lib/i18n";
 import type { SplitType } from "@/lib/types";
 
 interface Person {
@@ -35,7 +36,8 @@ const SPLIT_LABELS: Record<SplitType, string> = {
   by_item: "By item",
 };
 
-export function CreateBillForm() {
+export function CreateBillForm({ lang }: { lang: Lang }) {
+  const t = billStrings[lang];
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -393,7 +395,7 @@ export function CreateBillForm() {
           <div className="flex items-center justify-between">
             <h2 className="flex items-center gap-2 font-display text-lg font-bold">
               <Soup className="size-4 text-sambal-600" aria-hidden />
-              What did everyone makan?
+              {t.whatMakan}
             </h2>
             <span className="text-sm text-foreground-muted">
               Total {formatMoney(byItemTotal)}
@@ -504,7 +506,7 @@ export function CreateBillForm() {
         disabled={pending}
         className={btn.accent + " w-full !py-3.5 text-base"}
       >
-        {pending ? "Cooking up your link…" : "Jom split — make the link"}
+        {pending ? "Cooking up your link…" : t.jomSplit}
       </button>
     </div>
   );

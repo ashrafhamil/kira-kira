@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { confirmPaymentAction } from "@/app/actions";
 import { Check, KeyRound } from "lucide-react";
 import { rememberBill } from "@/lib/mybills";
+import { billStrings, type Lang } from "@/lib/i18n";
 import { TehGlass } from "@/components/TehGlass";
 import { StatusBadge } from "@/components/StatusBadge";
 import { CopyButton } from "@/components/CopyButton";
@@ -28,6 +29,7 @@ export function Dashboard({
   manageToken,
   shareUrl,
   manageUrl,
+  lang,
   isNew,
   title,
   totalAmount,
@@ -36,12 +38,14 @@ export function Dashboard({
   manageToken: string;
   shareUrl: string;
   manageUrl: string;
+  lang: Lang;
   isNew?: boolean;
   title: string;
   organizerName: string;
   totalAmount: number;
   participants: Row[];
 }) {
+  const t = billStrings[lang];
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -158,7 +162,7 @@ export function Dashboard({
         <TehGlass percent={percent} className="h-28 w-24 shrink-0" />
         <div className="min-w-0">
           <p className="font-display text-xl font-bold">
-            {percent === 100 ? "Semua dah settle!" : formatMoney(collected)}
+            {percent === 100 ? t.allSettled : formatMoney(collected)}
           </p>
           {percent !== 100 && (
             <p className="text-sm text-foreground-body">
@@ -176,7 +180,7 @@ export function Dashboard({
       {outstanding.length > 0 && (
         <section className={card + " p-5"}>
           <div className="flex items-center justify-between">
-            <h2 className="font-display text-lg font-bold">Belum bayar</h2>
+            <h2 className="font-display text-lg font-bold">{t.unpaidSection}</h2>
             <a
               href={blastHref}
               target="_blank"
@@ -199,7 +203,7 @@ export function Dashboard({
                       {formatMoney(p.amount)}
                     </p>
                   </div>
-                  <StatusBadge status={p.status} />
+                  <StatusBadge status={p.status} labels={t.status} />
                 </div>
                 {p.proof_url && (
                   <a
@@ -228,7 +232,7 @@ export function Dashboard({
                   >
                     {p.status === "claimed" ? (
                       <>
-                        <Check className="size-4" aria-hidden /> Confirm — Dah bayar
+                        <Check className="size-4" aria-hidden /> {t.confirmPaid}
                       </>
                     ) : (
                       "Mark as paid"
@@ -244,7 +248,7 @@ export function Dashboard({
       {/* Settled */}
       {settled.length > 0 && (
         <section className={card + " p-5"}>
-          <h2 className="font-display text-lg font-bold">Dah settle</h2>
+          <h2 className="font-display text-lg font-bold">{t.paidSection}</h2>
           <ul className="mt-3 space-y-2">
             {settled.map((p) => (
               <li key={p.id} className="flex items-center justify-between gap-2 py-1">

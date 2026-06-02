@@ -1,9 +1,11 @@
 import Link from "next/link";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { LangToggle } from "@/components/LangToggle";
 import { getBillByManageToken } from "@/lib/db";
+import { normalizeLang } from "@/lib/i18n";
 import { Dashboard } from "./Dashboard";
 
 export const dynamic = "force-dynamic";
@@ -26,12 +28,17 @@ export default async function ManagePage({
   const origin = `${proto}://${host}`;
   const shareUrl = `${origin}/b/${bill.slug}`;
   const manageUrl = `${origin}/manage/${token}`;
+  const lang = normalizeLang((await cookies()).get("kira-lang")?.value);
 
   return (
     <div className="mx-auto flex min-h-full w-full max-w-lg flex-col px-5">
       <header className="flex items-center justify-between py-5">
         <Logo />
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <LangToggle
+            lang={lang}
+            className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2.5 py-2 text-xs font-semibold text-foreground hover:bg-surface-sunken"
+          />
           <ThemeToggle />
           <Link href="/create" className="text-sm font-semibold text-foreground-muted">
             New bill
@@ -43,6 +50,7 @@ export default async function ManagePage({
           manageToken={token}
           shareUrl={shareUrl}
           manageUrl={manageUrl}
+          lang={lang}
           isNew={isNew === "1"}
           title={bill.title}
           organizerName={bill.organizer_name}

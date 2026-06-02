@@ -31,6 +31,15 @@ export interface BillStrings {
   celebrateStamp: string;
   done: string;
   status: { confirmed: string; claimed: string; unpaid: string };
+  // App chrome (landing / create / dashboard)
+  madeForMakan: string;
+  tagline: string;
+  step3Desc: string;
+  whatMakan: string;
+  jomSplit: string;
+  unpaidSection: string;
+  paidSection: string;
+  confirmPaid: string;
 }
 
 const manglish: BillStrings = {
@@ -60,6 +69,14 @@ const manglish: BillStrings = {
   celebrateStamp: "DAH BAYAR",
   done: "Done",
   status: { confirmed: "Settled", claimed: "Checking…", unpaid: "Belum bayar" },
+  madeForMakan: "Made for the makan group",
+  tagline: "Jom settle, no drama.",
+  step3Desc: "Watch the glass fill. Nudge whoever's belum bayar — politely.",
+  whatMakan: "What did everyone makan?",
+  jomSplit: "Jom split — make the link",
+  unpaidSection: "Belum bayar",
+  paidSection: "Dah settle",
+  confirmPaid: "Confirm — Dah bayar",
 };
 
 const en: BillStrings = {
@@ -89,6 +106,14 @@ const en: BillStrings = {
   celebrateStamp: "PAID",
   done: "Done",
   status: { confirmed: "Paid", claimed: "Checking…", unpaid: "Unpaid" },
+  madeForMakan: "Made for the group",
+  tagline: "Settle up, no drama.",
+  step3Desc: "Watch the glass fill. Nudge whoever hasn't paid — politely.",
+  whatMakan: "What did everyone order?",
+  jomSplit: "Split it — make the link",
+  unpaidSection: "Unpaid",
+  paidSection: "Paid",
+  confirmPaid: "Confirm — Paid",
 };
 
 export const billStrings: Record<Lang, BillStrings> = { manglish, en };

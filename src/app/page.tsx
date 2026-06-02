@@ -1,21 +1,30 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { MessageCircle, QrCode, ReceiptText, Link2, Soup } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { TehGlass } from "@/components/TehGlass";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { LangToggle } from "@/components/LangToggle";
 import { InstallButton } from "@/components/InstallButton";
 import { MyBills } from "@/components/MyBills";
 import { Reveal } from "@/components/Reveal";
 import { btn, card } from "@/components/ui";
+import { billStrings, normalizeLang } from "@/lib/i18n";
 
-export default function Home() {
+export default async function Home() {
+  const lang = normalizeLang((await cookies()).get("kira-lang")?.value);
+  const t = billStrings[lang];
   return (
     <div className="mx-auto flex min-h-full w-full max-w-5xl flex-col px-5">
       <header className="flex items-center justify-between py-5">
         <Logo />
         <div className="flex items-center gap-2">
           <InstallButton className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-2 text-sm font-semibold text-foreground hover:bg-surface-sunken" />
+          <LangToggle
+            lang={lang}
+            className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2.5 py-2 text-xs font-semibold text-foreground hover:bg-surface-sunken"
+          />
           <ThemeToggle />
           <Link href="/create" className={btn.accent + " !px-4 !py-2 text-sm"}>
             Start a bill
@@ -27,7 +36,7 @@ export default function Home() {
       <section className="grid items-center gap-10 py-8 md:grid-cols-2 md:py-14">
         <Reveal mount>
           <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-xs font-semibold text-foreground-muted">
-            <Soup className="size-3.5 text-sambal-600" /> Made for the makan group
+            <Soup className="size-3.5 text-sambal-600" /> {t.madeForMakan}
           </span>
           <h1 className="mt-4 text-4xl leading-[1.05] font-bold sm:text-5xl">
             Split the bill.
@@ -40,9 +49,7 @@ export default function Home() {
             Kira-Kira collects shared payments without the awkward chasing. One
             link, a DuitNow QR, and a dashboard that shows exactly who&rsquo;s
             settled.{" "}
-            <span className="font-semibold text-foreground">
-              Jom settle, no drama.
-            </span>
+            <span className="font-semibold text-foreground">{t.tagline}</span>
           </p>
           <div className="mt-7 flex flex-wrap items-center gap-3">
             <Link href="/create" className={btn.accent}>
@@ -85,7 +92,7 @@ export default function Home() {
                     <span className="font-mono-amount text-foreground-body">
                       RM 17.20
                     </span>
-                    <StatusBadge status={status} />
+                    <StatusBadge status={status} labels={t.status} />
                   </span>
                 </div>
               ))}
@@ -123,7 +130,7 @@ export default function Home() {
             {
               n: "3",
               t: "Track who's settled",
-              d: "Watch the glass fill. Nudge whoever's belum bayar — politely.",
+              d: t.step3Desc,
             },
           ].map((s, i) => (
             <Reveal
@@ -193,7 +200,7 @@ export default function Home() {
           >
             KrackedDevs
           </a>{" "}
-          Split-Bill bounty. Jom settle, no drama.
+          Split-Bill bounty. {t.tagline}
         </p>
       </footer>
     </div>

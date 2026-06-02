@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { LangToggle } from "@/components/LangToggle";
 import { MyBills } from "@/components/MyBills";
+import { normalizeLang } from "@/lib/i18n";
 import { CreateBillForm } from "./CreateBillForm";
 
 export const metadata: Metadata = {
@@ -10,12 +13,17 @@ export const metadata: Metadata = {
   description: "Create a split bill and share the payment link.",
 };
 
-export default function CreatePage() {
+export default async function CreatePage() {
+  const lang = normalizeLang((await cookies()).get("kira-lang")?.value);
   return (
     <div className="mx-auto flex min-h-full w-full max-w-xl flex-col px-5">
       <header className="flex items-center justify-between py-5">
         <Logo />
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <LangToggle
+            lang={lang}
+            className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2.5 py-2 text-xs font-semibold text-foreground hover:bg-surface-sunken"
+          />
           <ThemeToggle />
           <Link href="/" className="text-sm font-semibold text-foreground-muted">
             Back
@@ -28,7 +36,7 @@ export default function CreatePage() {
           Add what everyone owes — we&rsquo;ll make a link you can drop in the
           group.
         </p>
-        <CreateBillForm />
+        <CreateBillForm lang={lang} />
         <MyBills className="mt-10" />
       </main>
     </div>
