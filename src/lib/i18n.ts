@@ -34,6 +34,8 @@ export interface BillStrings {
   // App chrome (landing / create / dashboard)
   madeForMakan: string;
   tagline: string;
+  heroLead: string;
+  heroCloser: string;
   step3Desc: string;
   whatMakan: string;
   jomSplit: string;
@@ -71,6 +73,9 @@ const manglish: BillStrings = {
   status: { confirmed: "Settled", claimed: "Checking…", unpaid: "Belum bayar" },
   madeForMakan: "Made for the makan group",
   tagline: "Jom settle, no drama.",
+  heroLead:
+    "Snap je receipt tu — Kira-Kira terus baca semua, split betul-betul, pastu kejar whoever belum bayar. Satu link, DuitNow QR, dashboard tunjuk siapa dah settle.",
+  heroCloser: "Ez kan?",
   step3Desc: "Watch the glass fill. Nudge whoever's belum bayar — politely.",
   whatMakan: "What did everyone makan?",
   jomSplit: "Jom split — make the link",
@@ -108,6 +113,9 @@ const en: BillStrings = {
   status: { confirmed: "Paid", claimed: "Checking…", unpaid: "Unpaid" },
   madeForMakan: "Made for the group",
   tagline: "Settle up, no drama.",
+  heroLead:
+    "Snap the receipt and Kira-Kira reads every item, splits it fairly, and nudges whoever hasn't paid. One link, a DuitNow QR, and a dashboard showing exactly who's settled.",
+  heroCloser: "Easy, right?",
   step3Desc: "Watch the glass fill. Nudge whoever hasn't paid — politely.",
   whatMakan: "What did everyone order?",
   jomSplit: "Split it — make the link",
