@@ -11,7 +11,9 @@ Built for the [KrackedDevs](https://krackeddevs.com) *Split Bill & Payment Track
 
 [**Live demo →**](https://kira-kira-ashrafhamils-projects.vercel.app) · [Try a sample bill](https://kira-kira-ashrafhamils-projects.vercel.app/b/mamak-supper-demo)
 
-![Kira-Kira](docs/screenshots/og-card.png)
+![Snap a receipt and watch Kira-Kira split it](docs/screenshots/demo.gif)
+
+<sub>Snap a receipt → items auto-fill → tap who shares each → shareable link. No sign-up.</sub>
 
 </div>
 
@@ -44,9 +46,13 @@ Someone always fronts the bill — for the mamak supper, the Genting trip, the o
 
 ## 📸 Screens
 
-| Create a bill | The receipt | The dashboard |
+![Landing](docs/screenshots/landing.png)
+
+| Create — scan a receipt | The receipt | The dashboard |
 |---|---|---|
 | ![Create](docs/screenshots/create.png) | ![Bill receipt](docs/screenshots/bill-receipt.png) | ![Dashboard](docs/screenshots/dashboard.png) |
+
+<sub>The shared link renders a custom <a href="docs/screenshots/og-card.png">preview card</a> in the WhatsApp group.</sub>
 
 ---
 
