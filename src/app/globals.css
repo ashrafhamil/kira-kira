@@ -264,6 +264,20 @@ body {
   mask-composite: intersect;
 }
 
+/* Torn thermal-receipt paper — zigzag top + bottom, shape-following shadow. */
+.receipt-paper {
+  --tear: 7px;
+  -webkit-mask:
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg)
+      bottom / calc(2 * var(--tear)) var(--tear) repeat-x,
+    conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg)
+      top / calc(2 * var(--tear)) var(--tear) repeat-x,
+    linear-gradient(#000 0 0) center / 100% calc(100% - 2 * var(--tear)) no-repeat;
+  -webkit-mask-composite: source-over;
+  mask-composite: add;
+  filter: drop-shadow(0 6px 14px rgb(var(--kira-shadow-color) / 0.16));
+}
+
 /* LUNAS / PAID chop-stamp — slam down, squash on impact, settle */
 @keyframes stamp-in {
   0%   { opacity: 0;    transform: rotate(-14deg) scale(2.2); }  /* inked, hovering */

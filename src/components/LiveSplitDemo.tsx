@@ -6,7 +6,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Minus, Plus } from "lucide-react";
 import { AnimatedMoney } from "@/components/AnimatedMoney";
 import { ScanReceipt, type ScanResult } from "@/components/ScanReceipt";
-import { btn, card, inputBare } from "@/components/ui";
+import { btn, inputBare } from "@/components/ui";
 import { formatMoney, round2 } from "@/lib/format";
 import { billStrings, type Lang } from "@/lib/i18n";
 
@@ -154,19 +154,19 @@ export function LiveSplitDemo({ lang }: { lang: Lang }) {
         <ScanReceipt className="mx-auto mt-5 max-w-xl" onScanned={applyScan} />
       </div>
 
-      <div className={card + " mx-auto max-w-xl overflow-hidden p-0"}>
-        {/* Mode toggle */}
-        <div className="grid grid-cols-2 gap-2 bg-surface-sunken p-1.5">
+      <div className="mx-auto max-w-xl">
+        {/* Mode toggle — sits above the paper */}
+        <div className="mx-auto mb-5 grid w-full max-w-xs grid-cols-2 gap-1 rounded-full border border-border bg-surface p-1 text-sm font-semibold">
           {(["equal", "by_item"] as const).map((m) => (
             <button
               key={m}
               type="button"
               onClick={() => setMode(m)}
               aria-pressed={mode === m}
-              className={`rounded-[var(--radius-sm)] px-3 py-2 text-sm font-semibold transition ${
+              className={`rounded-full px-3 py-1.5 transition ${
                 mode === m
-                  ? "bg-surface-raised text-foreground shadow-[var(--shadow-xs)]"
-                  : "text-foreground-muted"
+                  ? "bg-kopi-700 text-krim-50"
+                  : "text-foreground-muted hover:text-foreground"
               }`}
             >
               {m === "equal" ? "Split equally" : "Split by item"}
@@ -174,7 +174,7 @@ export function LiveSplitDemo({ lang }: { lang: Lang }) {
           ))}
         </div>
 
-        <div className="receipt-edge bg-surface-raised px-5 pt-6 pb-6 sm:px-7">
+        <div className="receipt-paper kopi-grain bg-surface-raised px-5 pt-8 pb-8 sm:px-7">
           <p className="text-center font-mono-amount text-xs uppercase tracking-[0.3em] text-foreground-muted">
             Kira-Kira
           </p>
@@ -316,14 +316,14 @@ export function LiveSplitDemo({ lang }: { lang: Lang }) {
               {formatMoney(computedTotal)}
             </span>
           </div>
-
-          <Link href={prefillHref} className={btn.accent + " mt-5 w-full"}>
-            Start this bill <ArrowRight className="size-4" />
-          </Link>
-          <p className="mt-2 text-center text-xs text-foreground-muted">
-            Carries straight into a real, shareable link.
-          </p>
         </div>
+
+        <Link href={prefillHref} className={btn.accent + " mt-5 w-full"}>
+          Start this bill <ArrowRight className="size-4" />
+        </Link>
+        <p className="mt-2 text-center text-xs text-foreground-muted">
+          Carries straight into a real, shareable link.
+        </p>
       </div>
     </section>
   );
