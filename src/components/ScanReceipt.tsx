@@ -73,7 +73,6 @@ export function ScanReceipt({
         ref={inputRef}
         type="file"
         accept="image/*"
-        capture="environment"
         className="hidden"
         onChange={(e) => {
           const f = e.target.files?.[0];
@@ -93,7 +92,7 @@ export function ScanReceipt({
           </>
         ) : (
           <>
-            <Camera className="size-4" /> Scan receipt
+            <Camera className="size-4" /> Scan or upload receipt
             <Sparkles className="size-3.5 text-sambal-600" />
           </>
         )}
@@ -102,7 +101,8 @@ export function ScanReceipt({
         <p className="mt-2 text-sm font-medium text-unpaid-foreground">{error}</p>
       ) : (
         <p className="mt-2 text-center text-xs text-foreground-muted">
-          Snap the bill — we&rsquo;ll fill in the items. You just tap who shares each.
+          Snap it or upload a photo — we&rsquo;ll fill in the items. You just tap
+          who shares each.
         </p>
       )}
     </div>

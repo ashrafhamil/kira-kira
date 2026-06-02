@@ -25,7 +25,7 @@ export default async function Home() {
           <LangToggle lang={lang} />
           <ThemeToggle />
           <Link href="/create" className={btn.accent + " !px-4 !py-2 text-sm"}>
-            Start a bill
+            <ScanLine className="size-4" /> Scan a receipt
           </Link>
         </div>
       </header>
