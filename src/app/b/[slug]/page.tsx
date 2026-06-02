@@ -66,8 +66,7 @@ export default async function BillPage({
 
       <main className="space-y-6 pb-16">
         {/* Receipt */}
-        <section className={card + " overflow-hidden p-0"}>
-          <div className="receipt-edge bg-surface-raised px-6 pt-7 pb-6">
+        <section className="receipt-paper kopi-grain bg-surface-raised px-6 pt-8 pb-7">
             <p className="text-center font-mono-amount text-xs uppercase tracking-[0.3em] text-foreground-muted">
               Kira-Kira
             </p>
@@ -119,7 +118,6 @@ export default async function BillPage({
               <span>{t.collectedSoFar}</span>
               <span className="font-mono-amount">{formatMoney(progress.collected)}</span>
             </div>
-          </div>
         </section>
 
         {/* Item breakdown (by-item split) */}

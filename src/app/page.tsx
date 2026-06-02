@@ -61,8 +61,7 @@ export default async function Home() {
 
         {/* Hero visual: mini receipt + glass */}
         <Reveal mount delay={0.15} className="flex flex-col items-center gap-4">
-          <div className={card + " w-full max-w-sm overflow-hidden"}>
-            <div className="receipt-edge bg-surface-raised px-6 pt-6 pb-7">
+          <div className="receipt-paper kopi-grain w-full max-w-sm bg-surface-raised px-6 pt-7 pb-7">
               <p className="text-center font-display text-lg font-bold">
                 Mamak Supper 🍢
               </p>
@@ -91,7 +90,6 @@ export default async function Home() {
                   </span>
                 </div>
               ))}
-            </div>
           </div>
           <div className="flex items-center gap-3 rounded-2xl border border-border bg-surface px-4 py-2.5 shadow-[var(--shadow-sm)]">
             <TehGlass percent={68} className="h-12 w-10 shrink-0" />
