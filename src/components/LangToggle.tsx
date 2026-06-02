@@ -1,24 +1,36 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Languages } from "lucide-react";
 import type { Lang } from "@/lib/i18n";
 
-export function LangToggle({ lang, className = "" }: { lang: Lang; className?: string }) {
+export function LangToggle({ lang }: { lang: Lang }) {
   const router = useRouter();
-  function toggle() {
-    const next = lang === "en" ? "manglish" : "en";
+  function set(next: Lang) {
+    if (next === lang) return;
     document.cookie = `kira-lang=${next};path=/;max-age=31536000;samesite=lax`;
     router.refresh();
   }
   return (
-    <button
-      type="button"
-      onClick={toggle}
-      aria-label={`Switch to ${lang === "en" ? "Manglish" : "English"}`}
-      className={className}
+    <div
+      role="group"
+      aria-label="Language"
+      className="inline-flex items-center gap-0.5 rounded-full border border-border bg-surface p-0.5 text-xs font-semibold"
     >
-      <Languages className="size-4" aria-hidden /> {lang === "en" ? "EN" : "MS"}
-    </button>
+      {(["manglish", "en"] as const).map((l) => (
+        <button
+          key={l}
+          type="button"
+          onClick={() => set(l)}
+          aria-pressed={lang === l}
+          className={`rounded-full px-2 py-1 transition ${
+            lang === l
+              ? "bg-kopi-700 text-krim-50"
+              : "text-foreground-muted hover:text-foreground"
+          }`}
+        >
+          {l === "manglish" ? "MS" : "EN"}
+        </button>
+      ))}
+    </div>
   );
 }

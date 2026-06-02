@@ -56,10 +56,7 @@ export default async function BillPage({
       <header className="flex items-center justify-between py-5">
         <Logo />
         <div className="flex items-center gap-2">
-          <LangToggle
-            lang={lang}
-            className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2.5 py-2 text-xs font-semibold text-foreground hover:bg-surface-sunken"
-          />
+          <LangToggle lang={lang} />
           <ThemeToggle />
           <Link href="/create" className="text-sm font-semibold text-foreground-muted">
             {t.startOwn}

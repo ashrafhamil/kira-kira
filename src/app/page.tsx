@@ -21,10 +21,7 @@ export default async function Home() {
         <Logo />
         <div className="flex items-center gap-2">
           <InstallButton className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-2 text-sm font-semibold text-foreground hover:bg-surface-sunken" />
-          <LangToggle
-            lang={lang}
-            className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2.5 py-2 text-xs font-semibold text-foreground hover:bg-surface-sunken"
-          />
+          <LangToggle lang={lang} />
           <ThemeToggle />
           <Link href="/create" className={btn.accent + " !px-4 !py-2 text-sm"}>
             Start a bill
