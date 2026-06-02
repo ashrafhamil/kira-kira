@@ -85,7 +85,7 @@ export function ScanReceipt({
         type="button"
         disabled={busy}
         onClick={() => inputRef.current?.click()}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-[var(--radius-md)] border border-accent/40 bg-accent/10 px-4 py-3 font-semibold text-accent-foreground transition hover:bg-accent/15 disabled:opacity-60"
+        className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-[var(--radius-md)] border border-accent/40 bg-accent/10 px-4 py-3 font-semibold text-accent transition hover:border-accent/70 hover:bg-accent/20 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
       >
         {busy ? (
           <>
