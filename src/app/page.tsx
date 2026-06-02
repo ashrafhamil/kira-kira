@@ -36,26 +36,23 @@ export default async function Home() {
           <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-xs font-semibold text-foreground-muted">
             <Soup className="size-3.5 text-sambal-600" /> {t.madeForMakan}
           </span>
-          <h1 className="mt-4 text-4xl leading-[1.05] font-bold sm:text-5xl">
-            Split the bill.
-            <br />
-            Share the link.
-            <br />
-            <span className="text-sambal-600">Get paid.</span>
+          <h1 className="mt-4 text-5xl leading-[1.02] font-bold sm:text-6xl">
+            Snap. Split.{" "}
+            <span className="text-sambal-600">Settle.</span>
           </h1>
-          <p className="mt-4 max-w-md text-lg text-foreground-body">
-            Kira-Kira collects shared payments without the awkward chasing. One
-            link, a DuitNow QR, and a dashboard that shows exactly who&rsquo;s
-            settled.{" "}
+          <p className="mt-5 max-w-md text-lg text-foreground-body">
+            Photograph the receipt — Kira-Kira reads every item, splits it
+            fair, and chases whoever hasn&rsquo;t paid. One link, a DuitNow QR,
+            and a dashboard that shows exactly who&rsquo;s settled.{" "}
             <span className="font-semibold text-foreground">{t.tagline}</span>
           </p>
           <div className="mt-7 flex flex-wrap items-center gap-3">
             <Link href="/create" className={btn.accent}>
-              Start a bill — free
+              <ScanLine className="size-4" /> Scan a receipt
             </Link>
-            <a href="#how" className={btn.ghost}>
-              How it works
-            </a>
+            <Link href="/create" className={btn.ghost}>
+              Start a bill
+            </Link>
           </div>
           <p className="mt-3 text-sm text-foreground-muted">
             No sign-up. Takes 30 seconds.

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Minus, Plus } from "lucide-react";
 import { AnimatedMoney } from "@/components/AnimatedMoney";
+import { ScanReceipt, type ScanResult } from "@/components/ScanReceipt";
 import { btn, card, inputBare } from "@/components/ui";
 import { formatMoney, round2 } from "@/lib/format";
 import { billStrings, type Lang } from "@/lib/i18n";
@@ -92,6 +93,22 @@ export function LiveSplitDemo({ lang }: { lang: Lang }) {
     setItems((prev) => prev.map((it, idx) => (idx === i ? { ...it, price: v } : it)));
   }
 
+  // Real receipt scan, in-place: fills the demo's by-item view from a photo.
+  function applyScan(r: ScanResult) {
+    setMode("by_item");
+    const everyone = names.map((_, i) => i);
+    const scanned: DemoItem[] = r.items.map((it) => ({
+      name: it.name,
+      price: String(it.price),
+      sharedBy: [...everyone], // demo: assign to all so shares populate instantly
+    }));
+    const charges: DemoItem[] = [];
+    if (r.serviceCharge)
+      charges.push({ name: "Service charge", price: String(r.serviceCharge), sharedBy: [...everyone] });
+    if (r.sst) charges.push({ name: "SST", price: String(r.sst), sharedBy: [...everyone] });
+    setItems([...scanned, ...charges]);
+  }
+
   // Carry the demo into the real create form (server page reads `?demo=`).
   const prefillHref = useMemo(() => {
     // Map original people indexes -> named-only indexes so item shares stay correct.
@@ -131,9 +148,10 @@ export function LiveSplitDemo({ lang }: { lang: Lang }) {
           Try it — split a bill right here
         </h2>
         <p className="mt-2 text-foreground-body">
-          Type the total, add names, switch to <b>by item</b> — watch every share
-          update instantly.
+          <b>Snap a real receipt</b> and watch it fill in — or type the total and
+          add names. Every share updates instantly.
         </p>
+        <ScanReceipt className="mx-auto mt-5 max-w-xl" onScanned={applyScan} />
       </div>
 
       <div className={card + " mx-auto max-w-xl overflow-hidden p-0"}>
